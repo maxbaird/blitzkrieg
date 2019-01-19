@@ -33,6 +33,8 @@ int main(){
   Tile *tiles = makeTiles(HEIGHT * WIDTH);
   Board *board = makeBoard(tiles, HEIGHT, WIDTH);
 
+  placeLetters(board, "abcdefghijklmnop");
+
   size_t i = 0;
   for(i = 0; i < HEIGHT * WIDTH; i++){
     printTile(&tiles[i]);
