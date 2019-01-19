@@ -43,6 +43,8 @@ int main(){
     dictionary = Insert((void *)&word_arr[i], dictionary);
   }
 
+  fprintf(stdout, "Found: %s\n", (char *)Retrieve(Find("xob", dictionary)));
+
   //Tile *tiles = makeTiles(HEIGHT * WIDTH);
   //Board *board = makeBoard(tiles, HEIGHT, WIDTH);
 
