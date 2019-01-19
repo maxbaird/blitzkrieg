@@ -6,7 +6,7 @@ CFLAGS        = -c -Wall -Werror -Wextra
 
 all : $(PROJECT)
 
-$(PROJECT) : blitzkrieg.o tile.o board.o dictionary.o
+$(PROJECT) : blitzkrieg.o tile.o board.o lexis.o avltree.o
 	$(CC) -o $@ $^
 
 blitzkrieg.o : blitzkrieg.c
@@ -18,7 +18,10 @@ tile.o : tile.c
 board.o : board.c
 	$(CC) $(CFLAGS) $<
 
-dictionary.o : dictionary.c
+lexis.o : lexis.c
+	$(CC) $(CFLAGS) $<
+
+avltree.o : avltree.c
 	$(CC) $(CFLAGS) $<
 
 clean :

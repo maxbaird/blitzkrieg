@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "tile.h"
 #include "board.h"
-#include "dictionary.h"
+#include "lexis.h"
 
 #define HEIGHT 4
 #define WIDTH 4
@@ -30,35 +30,23 @@ void printTile(Tile *t){
   fprintf(stdout, "\n");
 }
 
-#define WORD_AMT 6
-#define WORD_LEN 32
 //heh heh heh...
 
 int main(){
-  char word_arr[WORD_AMT][WORD_LEN] = {"this", "is", "aaa", "test", "hello", "xob"};
-  AvlTree dictionary = MakeEmpty(NULL);
 
-  int i;
-  for(i = 0; i < WORD_AMT; i++){
-    dictionary = Insert((void *)&word_arr[i], dictionary);
+  Tile *tiles = makeTiles(HEIGHT * WIDTH);
+  Board *board = makeBoard(tiles, HEIGHT, WIDTH);
+
+  placeLetters(board, "abcdefghijklmnop");
+
+  size_t i = 0;
+  for(i = 0; i < HEIGHT * WIDTH; i++){
+    printTile(&board->tiles[i]);
   }
 
-  fprintf(stdout, "Found: %s\n", (char *)Retrieve(Find("xob", dictionary)));
+  clearTiles(tiles);
+  clearBoard(board);
 
-  //Tile *tiles = makeTiles(HEIGHT * WIDTH);
-  //Board *board = makeBoard(tiles, HEIGHT, WIDTH);
-
-  //placeLetters(board, "abcdefghijklmnop");
-
-  //size_t i = 0;
-  //for(i = 0; i < HEIGHT * WIDTH; i++){
-  //  printTile(&board->tiles[i]);
-  //}
-
-  //clearTiles(tiles);
-  //clearBoard(board);
-  //
-  MakeEmpty(dictionary);
 
   return EXIT_SUCCESS;
 }
