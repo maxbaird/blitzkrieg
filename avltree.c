@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 #include "avltree.h"
 
 struct AvlNode
@@ -13,9 +14,20 @@ struct AvlNode
 
 //typedef int (*callback)(const void *e1, const void *e2);
 //callback comparator;
-
+//bool inserting;
 static inline int comparator(void *e1, void *e2){
+  //fprintf(stdout, "looking for %s\n", (char *)e2);
+  //exit(EXIT_FAILURE);
+  //if(!inserting){
+  //  fprintf(stdout, "%zu == %zu\n", strlen((char *)e1), strlen((char *)e2));
+  //  fprintf(stdout, "%s == %s\n", (char *)e1, (char *)e2);
+  //}
+  //exit(EXIT_FAILURE);
   return strcmp((const char*)e1, (const char*)e2);
+}
+
+static inline void freeElement(ElementType e){
+  free(e);
 }
 
 AvlTree MakeEmpty( AvlTree T)
@@ -24,6 +36,7 @@ AvlTree MakeEmpty( AvlTree T)
   {
     MakeEmpty( T->Left/*, NULL*/ );
     MakeEmpty( T->Right/*, NULL */);
+    freeElement(T->Element);
     free( T );
   }
   //comparator = c;
@@ -33,17 +46,23 @@ AvlTree MakeEmpty( AvlTree T)
   Position
 Find( ElementType X, AvlTree T )
 {
+  //inserting=false;
   if( T == NULL )
     return NULL;
   //if( X < T->Element )
-  if( comparator(X , T->Element) < 0 )
+  if( comparator(X , T->Element) < 0 ){
+    //fprintf(stdout, "Looking left for: %s\n", (char *)X);
     return Find( X, T->Left );
+  }
   else
     //if( X > T->Element )
-    if( comparator(X , T->Element) > 0 )
+    if( comparator(X , T->Element) > 0 ){
+    //fprintf(stdout, "Looking right for: %s\n", (char *)X);
       return Find( X, T->Right );
+    }
     else
       return T;
+
 }
 
 /* START: fig4_36.txt */
@@ -91,21 +110,16 @@ SingleRotateWithLeft( Position K2 )
   static Position
 SingleRotateWithRight( Position K1 )
 {
-  fprintf(stdout, "Entering %s\n", __func__);
   Position K2;
 
-  fprintf(stdout, "got here 1\n");
   K2 = K1->Right;
-  fprintf(stdout, "got here 2\n");
   K1->Right = K2->Left;
-  fprintf(stdout, "got here 3\n");
   K2->Left = K1;
 
 
   K1->Height = Max( Height( K1->Left ), Height( K1->Right ) ) + 1;
   K2->Height = Max( Height( K2->Right ), K1->Height ) + 1;
 
-  fprintf(stdout, "leaving %s\n", __func__);
   return K2;  /* New root */
 }
 
@@ -146,6 +160,7 @@ DoubleRotateWithRight( Position K1 )
   AvlTree
 Insert( ElementType X, AvlTree T )
 {
+  //inserting = true;
   if( T == NULL )
   {
     /* Create and return a one-node tree */

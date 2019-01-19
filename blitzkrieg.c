@@ -47,6 +47,10 @@ int main(){
   clearTiles(tiles);
   clearBoard(board);
 
+  loadLexis();
+  fprintf(stdout, "%s\n", isWord("abacus") ? "True" : "False");
+  fprintf(stdout, "%s\n", isWord("zebra") ? "True" : "False");
+  unloadLexis();
 
   return EXIT_SUCCESS;
 }
