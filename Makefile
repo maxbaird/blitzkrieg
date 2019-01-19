@@ -6,10 +6,16 @@ CFLAGS        = -c -Wall -Werror -Wextra
 
 all : $(PROJECT)
 
-$(PROJECT) : main.o
+$(PROJECT) : main.o tile.o board.o
 	$(CC) -o $@ $^
 
 main.o : main.c
+	$(CC) $(CFLAGS) $<
+
+tile.o : tile.c
+	$(CC) $(CFLAGS) $<
+
+board.o : board.c
 	$(CC) $(CFLAGS) $<
 
 clean :

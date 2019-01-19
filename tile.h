@@ -3,17 +3,6 @@
 
 #include <stdbool.h>
 
-typedef struct direction{
-  bool N;
-  bool S;
-  bool E;
-  bool W;
-  bool NE;
-  bool SE;
-  bool SW;
-  bool NW;
-}Direction;
-
 typedef struct coordinate{
   unsigned int x;
   unsigned int y;
@@ -22,11 +11,18 @@ typedef struct coordinate{
 typedef struct tile{
   char letter;
   Coordinate coordinate;
-  Direction direction;
+
+  struct tile *N;
+  struct tile *S;
+  struct tile *E;
+  struct tile *W;
+  struct tile *NE;
+  struct tile *SE;
+  struct tile *SW;
+  struct tile *NW;
 }Tile;
 
-void makeTile(){
-
-}
+Tile* makeTiles(size_t n);
+void clearTiles(Tile *t);
 
 #endif /* __TILE_H__ */
