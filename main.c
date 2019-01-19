@@ -3,7 +3,6 @@
 #include "tile.h"
 #include "board.h"
 
-#define BOARD_SIZE 16
 #define HEIGHT 4
 #define WIDTH 4
 
@@ -31,11 +30,11 @@ void printTile(Tile *t){
 }
 
 int main(){
-  Tile *tiles = makeTiles(BOARD_SIZE);
-  Board *board = makeBoard(tiles, BOARD_SIZE, HEIGHT, WIDTH);
+  Tile *tiles = makeTiles(HEIGHT * WIDTH);
+  Board *board = makeBoard(tiles, HEIGHT, WIDTH);
 
   size_t i = 0;
-  for(i = 0; i < BOARD_SIZE; i++){
+  for(i = 0; i < HEIGHT * WIDTH; i++){
     printTile(&tiles[i]);
   }
 

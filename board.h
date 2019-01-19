@@ -13,7 +13,7 @@ typedef struct board{
   Dimension dimension;
 }Board;
 
-Board *makeBoard(Tile *tiles, size_t n, int height, int width);
+Board *makeBoard(Tile *tiles, size_t height, size_t width);
 void clearBoard(Board *b);
 
 #endif /* __BOARD_H__ */

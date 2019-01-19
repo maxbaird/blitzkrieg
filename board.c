@@ -25,7 +25,7 @@ static void setPaths(Board *b, Tile *t, size_t idx){
   t->NW = (N < 0 || W < 0) ? NULL : &b->tiles[NW];
 }
 
-Board *makeBoard(Tile *tiles, size_t n, int height, int width){
+Board *makeBoard(Tile *tiles, size_t height, size_t width){
   Board *board = malloc(sizeof(Board));
 
   if(board == NULL){
@@ -38,9 +38,16 @@ Board *makeBoard(Tile *tiles, size_t n, int height, int width){
   board->tiles = tiles;
 
   size_t i = 0;
+  size_t j = 0;
+  size_t idx = 0;
 
-  for(i = 0; i < n; i++){
-    setPaths(board, &board->tiles[i], i);
+  for(i = 0; i < height; i++){
+    for(j = 0; j < width; j++){
+      idx = (width * i) + j;
+      board->tiles[idx].coordinate.x = i;
+      board->tiles[idx].coordinate.y = j;
+      setPaths(board, &board->tiles[idx], idx);
+    }
   }
 
   return board;
