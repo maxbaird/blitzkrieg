@@ -29,6 +29,7 @@ void printTile(Tile *t){
   fprintf(stdout, "\n");
 }
 
+//heh heh heh...
 int main(){
   Tile *tiles = makeTiles(HEIGHT * WIDTH);
   Board *board = makeBoard(tiles, HEIGHT, WIDTH);

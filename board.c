@@ -1,12 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "board.h"
+#include "tile.h"
 
-static void setPaths(Board *b, Tile *t, size_t idx){
+static void setPaths(Board *b, Tile *t){
   int height = b->dimension.height;
   int width = b->dimension.width;
+
   int X = t->coordinate.x;
   int Y = t->coordinate.y;
+
+  size_t idx = (height * Y) + X;
 
   int N = idx - width;
   int S = idx + height;
@@ -46,9 +50,9 @@ Board *makeBoard(Tile *tiles, size_t height, size_t width){
   for(i = 0; i < height; i++){
     for(j = 0; j < width; j++){
       idx = (width * i) + j;
-      board->tiles[idx].coordinate.x = j;
-      board->tiles[idx].coordinate.y = i;
-      setPaths(board, &board->tiles[idx], idx);
+      tiles[idx].coordinate.x = j;
+      tiles[idx].coordinate.y = i;
+      setPaths(board, &tiles[idx]);
     }
   }
 
