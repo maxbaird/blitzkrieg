@@ -65,7 +65,6 @@ Find( ElementType X, AvlTree T )
 
 }
 
-/* START: fig4_36.txt */
   static int
 Height( Position P )
 {
@@ -74,7 +73,6 @@ Height( Position P )
   else
     return P->Height;
 }
-/* END */
 
   static int
 Max( int Lhs, int Rhs )
@@ -82,7 +80,6 @@ Max( int Lhs, int Rhs )
   return Lhs > Rhs ? Lhs : Rhs;
 }
 
-/* START: fig4_39.txt */
 /* This function can be called only if K2 has a left child */
 /* Perform a rotate between a node (K2) and its left child */
 /* Update heights, then return new root */
@@ -123,7 +120,6 @@ SingleRotateWithRight( Position K1 )
   return K2;  /* New root */
 }
 
-/* START: fig4_41.txt */
 /* This function can be called only if K3 has a left */
 /* child and K3's left child has a right child */
 /* Do the left-right double rotation */
@@ -156,7 +152,6 @@ DoubleRotateWithRight( Position K1 )
 }
 
 
-/* START: fig4_37.txt */
   AvlTree
 Insert( ElementType X, AvlTree T )
 {
