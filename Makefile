@@ -1,4 +1,4 @@
-PROJECT       = planet_cracker.out
+PROJECT       = blitzkrieg.out
 CC            = gcc
 CFLAGS        = -c -Wall -Werror -Wextra
 
@@ -6,10 +6,10 @@ CFLAGS        = -c -Wall -Werror -Wextra
 
 all : $(PROJECT)
 
-$(PROJECT) : main.o tile.o board.o
+$(PROJECT) : blitzkrieg.o tile.o board.o
 	$(CC) -o $@ $^
 
-main.o : main.c
+blitzkrieg.o : blitzkrieg.c
 	$(CC) $(CFLAGS) $<
 
 tile.o : tile.c
