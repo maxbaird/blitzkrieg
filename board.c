@@ -21,14 +21,14 @@ static void setPaths(Board *b, Tile *t){
   int SW = idx + (width - 1);
   int NW = idx - (width + 1);
 
-  t->N = (N <= 0) ? NULL : &b->tiles[N];
+  t->N = (N < 0) ? NULL : &b->tiles[N];
   t->S = (Y+1 >= height) ? NULL : &b->tiles[S];
   t->E = (X+1 >= width) ? NULL : &b->tiles[E];
-  t->W = (W <= 0) ? NULL : &b->tiles[W];
-  t->NE = (N <= 0 || X+1 >= width) ? NULL : &b->tiles[NE];
+  t->W = (W < 0) ? NULL : &b->tiles[W];
+  t->NE = (N < 0 || X+1 >= width) ? NULL : &b->tiles[NE];
   t->SE = (Y+1 >= height || X+1 >= width) ? NULL : &b->tiles[SE];
-  t->SW = (Y+1 >= height || W <= 0) ? NULL : &b->tiles[SW];
-  t->NW = (N <= 0 || W <= 0) ? NULL : &b->tiles[NW];
+  t->SW = (Y+1 >= height || W < 0) ? NULL : &b->tiles[SW];
+  t->NW = (N < 0 || W < 0) ? NULL : &b->tiles[NW];
 }
 
 Board *makeBoard(Tile *tiles, size_t height, size_t width){
@@ -45,14 +45,16 @@ Board *makeBoard(Tile *tiles, size_t height, size_t width){
 
   size_t i = 0;
   size_t j = 0;
-  size_t idx = 0;
+  //size_t idx = 0;
+  Tile *currentTile = tiles;
 
   for(i = 0; i < height; i++){
     for(j = 0; j < width; j++){
-      idx = (width * i) + j;
-      tiles[idx].coordinate.x = j;
-      tiles[idx].coordinate.y = i;
-      setPaths(board, &tiles[idx]);
+      //idx = (width * i) + j;
+      currentTile->coordinate.x = j;
+      currentTile->coordinate.y = i;
+      setPaths(board, currentTile);
+      currentTile++;
     }
   }
 
