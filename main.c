@@ -37,7 +37,7 @@ int main(){
 
   size_t i = 0;
   for(i = 0; i < HEIGHT * WIDTH; i++){
-    printTile(&tiles[i]);
+    printTile(&board->tiles[i]);
   }
 
   clearTiles(tiles);

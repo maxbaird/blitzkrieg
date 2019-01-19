@@ -13,7 +13,7 @@ Tile* makeTiles(size_t n){
   size_t i = 0;
 
   for(i = 0; i < n; i++){
-    tiles[i].letter = 'c';
+    tiles[i].letter = '\0';
     tiles[i].coordinate.x = 0;
     tiles[i].coordinate.y = 0;
     tiles[i].N = NULL;
