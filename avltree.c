@@ -4,25 +4,14 @@
 #include <stdbool.h>
 #include "avltree.h"
 
-struct AvlNode
-{
+struct AvlNode{
   ElementType Element;
   AvlTree  Left;
   AvlTree  Right;
   int      Height;
 };
 
-//typedef int (*callback)(const void *e1, const void *e2);
-//callback comparator;
-//bool inserting;
 static inline int comparator(void *e1, void *e2){
-  //fprintf(stdout, "looking for %s\n", (char *)e2);
-  //exit(EXIT_FAILURE);
-  //if(!inserting){
-  //  fprintf(stdout, "%zu == %zu\n", strlen((char *)e1), strlen((char *)e2));
-  //  fprintf(stdout, "%s == %s\n", (char *)e1, (char *)e2);
-  //}
-  //exit(EXIT_FAILURE);
   return strcmp((const char*)e1, (const char*)e2);
 }
 
@@ -30,53 +19,43 @@ static inline void freeElement(ElementType e){
   free(e);
 }
 
-AvlTree MakeEmpty( AvlTree T)
-{
-  if( T != NULL )
-  {
-    MakeEmpty( T->Left/*, NULL*/ );
-    MakeEmpty( T->Right/*, NULL */);
+AvlTree MakeEmpty(AvlTree T){
+  if(T != NULL){
+    MakeEmpty(T->Left);
+    MakeEmpty(T->Right);
     freeElement(T->Element);
-    free( T );
+    free(T);
   }
-  //comparator = c;
   return NULL;
 }
 
-  Position
-Find( ElementType X, AvlTree T )
-{
-  //inserting=false;
-  if( T == NULL )
+
+Position Find(ElementType X, AvlTree T){
+  if(T == NULL){
     return NULL;
-  //if( X < T->Element )
-  if( comparator(X , T->Element) < 0 ){
-    //fprintf(stdout, "Looking left for: %s\n", (char *)X);
-    return Find( X, T->Left );
   }
-  else
-    //if( X > T->Element )
-    if( comparator(X , T->Element) > 0 ){
-    //fprintf(stdout, "Looking right for: %s\n", (char *)X);
-      return Find( X, T->Right );
-    }
-    else
-      return T;
 
+  if(comparator(X, T->Element) < 0){
+    return Find(X, T->Left);
+  }
+  else if(comparator(X, T->Element) > 0 ){
+    return Find(X, T->Right);
+  }
+  else{
+    return T;
+  }
 }
 
-  static int
-Height( Position P )
-{
-  if( P == NULL )
+static int Height(Position P){
+  if(P == NULL){
     return -1;
-  else
+  }
+  else{
     return P->Height;
+  }
 }
 
-  static int
-Max( int Lhs, int Rhs )
-{
+static int Max(int Lhs, int Rhs){
   return Lhs > Rhs ? Lhs : Rhs;
 }
 
@@ -84,38 +63,32 @@ Max( int Lhs, int Rhs )
 /* Perform a rotate between a node (K2) and its left child */
 /* Update heights, then return new root */
 
-  static Position
-SingleRotateWithLeft( Position K2 )
-{
+static Position SingleRotateWithLeft(Position K2){
   Position K1;
 
   K1 = K2->Left;
   K2->Left = K1->Right;
   K1->Right = K2;
 
-  K2->Height = Max( Height( K2->Left ), Height( K2->Right ) ) + 1;
-  K1->Height = Max( Height( K1->Left ), K2->Height ) + 1;
+  K2->Height = Max(Height(K2->Left), Height( K2->Right)) + 1;
+  K1->Height = Max(Height(K1->Left), K2->Height) + 1;
 
   return K1;  /* New root */
 }
-/* END */
 
 /* This function can be called only if K1 has a right child */
 /* Perform a rotate between a node (K1) and its right child */
 /* Update heights, then return new root */
 
-  static Position
-SingleRotateWithRight( Position K1 )
-{
+static Position SingleRotateWithRight(Position K1){
   Position K2;
 
   K2 = K1->Right;
   K1->Right = K2->Left;
   K2->Left = K1;
 
-
-  K1->Height = Max( Height( K1->Left ), Height( K1->Right ) ) + 1;
-  K2->Height = Max( Height( K2->Right ), K1->Height ) + 1;
+  K1->Height = Max(Height(K1->Left), Height(K1->Right)) + 1;
+  K2->Height = Max(Height(K2->Right), K1->Height) + 1;
 
   return K2;  /* New root */
 }
@@ -125,25 +98,20 @@ SingleRotateWithRight( Position K1 )
 /* Do the left-right double rotation */
 /* Update heights, then return new root */
 
-  static Position
-DoubleRotateWithLeft( Position K3 )
-{
+static Position DoubleRotateWithLeft(Position K3){
   /* Rotate between K1 and K2 */
-  K3->Left = SingleRotateWithRight( K3->Left );
+  K3->Left = SingleRotateWithRight(K3->Left);
 
   /* Rotate between K3 and K2 */
-  return SingleRotateWithLeft( K3 );
+  return SingleRotateWithLeft(K3);
 }
-/* END */
 
 /* This function can be called only if K1 has a right */
 /* child and K1's right child has a left child */
 /* Do the right-left double rotation */
 /* Update heights, then return new root */
 
-  static Position
-DoubleRotateWithRight( Position K1 )
-{
+static Position DoubleRotateWithRight(Position K1){
   /* Rotate between K3 and K2 */
   K1->Right = SingleRotateWithLeft( K1->Right );
 
@@ -152,65 +120,49 @@ DoubleRotateWithRight( Position K1 )
 }
 
 
-  AvlTree
-Insert( ElementType X, AvlTree T )
-{
-  //inserting = true;
-  if( T == NULL )
-  {
+AvlTree Insert(ElementType X, AvlTree T){
+  if(T == NULL){
     /* Create and return a one-node tree */
-    T = malloc( sizeof( struct AvlNode ) );
-    if( T == NULL ){
-      fprintf(stderr, "Out of space!!!" );
+    T = malloc(sizeof(struct AvlNode));
+    if(T == NULL){
+      fprintf(stderr, "Out of space!!!");
       exit(EXIT_FAILURE);
     }
-    else
-    {
+    else{
       T->Element = X; T->Height = 0;
       T->Left = T->Right = NULL;
     }
   }
-  else
-    //if( X < T->Element )
-    if(comparator(X , T->Element) < 0 )
-    {
-      T->Left = Insert( X, T->Left );
-      if( Height( T->Left ) - Height( T->Right ) == 2 ){
-        //if( X < T->Left->Element ){
-        if( comparator(X , T->Left->Element) < 0 ){
-          T = SingleRotateWithLeft( T );
-        }
-        else{
-          T = DoubleRotateWithLeft( T );
-        }
+  else if(comparator(X ,T->Element) < 0){
+    T->Left = Insert(X, T->Left);
+    if( Height(T->Left) - Height(T->Right) == 2){
+      if(comparator(X , T->Left->Element) < 0){
+        T = SingleRotateWithLeft(T);
+      }
+      else{
+        T = DoubleRotateWithLeft(T);
       }
     }
-
-    else
-      //if( X > T->Element )
-      if( comparator(X , T->Element) > 0 )
-      {
-        T->Right = Insert( X, T->Right );
-        if( Height( T->Right ) - Height( T->Left ) == 2 ){
-          //if( X > T->Right->Element ){
-          if( comparator(X , T->Right->Element) > 0 ){
-            T = SingleRotateWithRight( T );
-          }
-          else{
-            T = DoubleRotateWithRight( T );
-          }
-        }
+  }
+  else if(comparator(X, T->Element) > 0){
+    T->Right = Insert(X, T->Right);
+    if(Height(T->Right) - Height(T->Left) == 2){
+      if(comparator(X , T->Right->Element) > 0){
+        T = SingleRotateWithRight(T);
       }
+      else{
+        T = DoubleRotateWithRight(T);
+      }
+    }
+  }
 
   /* Else X is in the tree already; we'll do nothing */
 
-  T->Height = Max( Height( T->Left ), Height( T->Right ) ) + 1;
+  T->Height = Max(Height(T->Left), Height(T->Right)) + 1;
   return T;
 }
 /* END */
 
-  ElementType
-Retrieve( Position P )
-{
+ElementType Retrieve(Position P){
   return P->Element;
 }
