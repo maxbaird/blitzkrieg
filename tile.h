@@ -3,14 +3,22 @@
 
 #include <stdbool.h>
 
+#define PATH_AMT 8
+
 typedef struct coordinate{
   unsigned int x;
   unsigned int y;
 }Coordinate;
 
+typedef struct path{
+  bool visited;
+  bool complete;
+}Path;
+
 typedef struct tile{
   char letter;
   Coordinate coordinate;
+  Path *paths;
 
   struct tile *N;
   struct tile *S;
