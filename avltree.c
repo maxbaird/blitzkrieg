@@ -29,7 +29,6 @@ AvlTree MakeEmpty(AvlTree T){
   return NULL;
 }
 
-
 Position Find(ElementType X, AvlTree T){
   if(T == NULL){
     return NULL;
@@ -161,7 +160,6 @@ AvlTree Insert(ElementType X, AvlTree T){
   T->Height = Max(Height(T->Left), Height(T->Right)) + 1;
   return T;
 }
-/* END */
 
 ElementType Retrieve(Position P){
   return P->Element;

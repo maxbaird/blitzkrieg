@@ -50,6 +50,7 @@ int main(){
   loadLexis();
   fprintf(stdout, "%s\n", isWord("abacus") ? "True" : "False");
   fprintf(stdout, "%s\n", isWord("zebra") ? "True" : "False");
+  fprintf(stdout, "%s\n", isWord("adeawerwerzebra") ? "True" : "False");
   unloadLexis();
 
   return EXIT_SUCCESS;
