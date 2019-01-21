@@ -66,9 +66,9 @@ static void traverse(Tile *t, char *letters, int *path){
   free(tilePath);
 }
 
-void initFinder(Board *b){
-  BOARD = b;
-  TILE_COUNT = b->dimension.height * b->dimension.width;
+void initFinder(Board *board){
+  BOARD = board;
+  TILE_COUNT = BOARD->dimension.height * BOARD->dimension.width;
   loadLexis();
   INITIALIZED = true;
 }
@@ -77,7 +77,6 @@ void findWords(){
   checkInit();
 
   size_t i = 0;
-
   Tile *tile = BOARD->tiles;
 
   for(i = 0; i < TILE_COUNT; i++){
@@ -89,4 +88,5 @@ void findWords(){
 void unloadFinder(){
   checkInit();
   unloadLexis();
+  INITIALIZED = false;
 }

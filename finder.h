@@ -3,7 +3,7 @@
 
 #include "board.h"
 
-void initFinder(Board *b);
+void initFinder(Board *board);
 void unloadFinder();
 void findWords();
 
