@@ -1,6 +1,6 @@
 PROJECT       = blitzkrieg.out
 CC            = gcc
-CFLAGS        = -c -Wall -Werror -Wextra
+CFLAGS        = -c -g -Wall -Werror -Wextra
 
 .PHONY : all clean
 
