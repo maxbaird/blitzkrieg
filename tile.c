@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "tile.h"
 
 Tile* makeTiles(size_t n){
@@ -13,10 +14,11 @@ Tile* makeTiles(size_t n){
   size_t i = 0;
 
   for(i = 0; i < n; i++){
+    tiles[i].id = i;
     tiles[i].letter = '\0';
     tiles[i].coordinate.x = 0;
     tiles[i].coordinate.y = 0;
-    tiles[i].paths = NULL;
+    tiles[i].visited = false;
     tiles[i].N = NULL;
     tiles[i].S = NULL;
     tiles[i].E = NULL;
@@ -25,6 +27,7 @@ Tile* makeTiles(size_t n){
     tiles[i].SE = NULL;
     tiles[i].SW = NULL;
     tiles[i].NW = NULL;
+    memset(tiles[i].rootArray, 0, sizeof(bool) * 15);
   }
 
   return tiles;

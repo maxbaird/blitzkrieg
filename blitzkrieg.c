@@ -4,6 +4,7 @@
 #include "tile.h"
 #include "board.h"
 #include "lexis.h"
+#include "finder.h"
 
 #define HEIGHT 4
 #define WIDTH 4
@@ -34,7 +35,6 @@ void printTile(Tile *t){
 //heh heh heh...
 
 int main(){
-
   Tile *tiles = makeTiles(HEIGHT * WIDTH);
   Board *board = makeBoard(tiles, HEIGHT, WIDTH);
 
@@ -45,14 +45,16 @@ int main(){
     printTile(&board->tiles[i]);
   }
 
+  findWords(board);
+
   clearTiles(tiles);
   clearBoard(board);
 
-  loadLexis();
-  fprintf(stdout, "%s\n", isWord("abacus") ? "True" : "False");
-  fprintf(stdout, "%s\n", isWord("zebra") ? "True" : "False");
-  fprintf(stdout, "%s\n", isWord("adeawerwerzebra") ? "True" : "False");
-  unloadLexis();
+  //loadLexis();
+  //fprintf(stdout, "%s\n", isWord("abacus") ? "True" : "False");
+  //fprintf(stdout, "%s\n", isWord("zebra") ? "True" : "False");
+  //fprintf(stdout, "%s\n", isWord("adeawerwerzebra") ? "True" : "False");
+  //unloadLexis();
 
   return EXIT_SUCCESS;
 }

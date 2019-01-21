@@ -16,9 +16,12 @@ typedef struct path{
 }Path;
 
 typedef struct tile{
+  int id;
   char letter;
   Coordinate coordinate;
-  Path *paths;
+  bool rootArray[15];
+  //Path *paths;
+  bool visited;
 
   struct tile *N;
   struct tile *S;

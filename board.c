@@ -42,11 +42,11 @@ static void setPaths(Board *b, Tile *t){
   t->N = (N_idx < 0) ? NULL : &b->tiles[N_idx];
   t->S = (Y+1 >= height) ? NULL : &b->tiles[S_idx];
   t->E = (X+1 >= width) ? NULL : &b->tiles[E_idx];
-  t->W = (W_idx < 0) ? NULL : &b->tiles[W_idx];
+  t->W = (X-1 < 0) ? NULL : &b->tiles[W_idx];
   t->NE = (N_idx < 0 || X+1 >= width) ? NULL : &b->tiles[NE_idx];
   t->SE = (Y+1 >= height || X+1 >= width) ? NULL : &b->tiles[SE_idx];
-  t->SW = (Y+1 >= height || W_idx < 0) ? NULL : &b->tiles[SW_idx];
-  t->NW = (N_idx < 0 || W_idx < 0) ? NULL : &b->tiles[NW_idx];
+  t->SW = (Y+1 >= height || X-1 < 0) ? NULL : &b->tiles[SW_idx];
+  t->NW = (N_idx < 0 || X-1 < 0) ? NULL : &b->tiles[NW_idx];
 }
 
 Board *makeBoard(Tile *tiles, size_t height, size_t width){
