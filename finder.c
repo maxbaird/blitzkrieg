@@ -5,10 +5,18 @@
 #include "board.h"
 #include "lexis.h"
 
-/*static*/ bool canMove(Tile *t){
+/*static*/ bool canMove(Tile *t, int *tilePath){
   if(t == NULL) return false;
-  if(!t->visited) return true;
-  return false;
+  //if(!t->visited) return true;
+  int i = 0;
+  if(tilePath != NULL){
+  for(i = 0; i < 17; i++){
+    if(tilePath[i] == t->id){
+      return false;
+    }
+  }
+  }
+  return true;
 }
 
 /*static*/ bool movesLeft(Tile *t){
@@ -37,30 +45,42 @@
 //  }
 //}
 
-static void traverse(Tile *t, char *letters){
+static void traverse(Tile *t, char *letters, int *path){
   char *str = calloc(17, sizeof(char)); //Replace 17 with dimension of board plus 1
+  int *tilePath = calloc(17, sizeof(int));
 
   if(str == NULL){
     fprintf(stderr, "Failed to allocate memory for board traversal!\n");
     exit(EXIT_FAILURE);
   }
 
+  if(tilePath == NULL){
+    fprintf(stderr, "Failed to allocate memory for tile path!\n");
+    exit(EXIT_FAILURE);
+  }
+
+  memcpy(tilePath, path, sizeof(int) * 17);
+  tilePath[t->id] = t->id;
+
   strcpy(str, letters);
   str[strlen(letters)] = t->letter;
 
-  fprintf(stdout, "%s:%zu\n", str, strlen(str));
-  t->visited=true;
+  if(isWord(str)){
+    fprintf(stdout, "%s:%zu\n", str, strlen(str));
+  }
+  //t->visited=true;
 
-  if(canMove(t->N)){traverse(t->N, str);}
-  if(canMove(t->S)){traverse(t->S, str);}
-  if(canMove(t->E)){traverse(t->E, str);}
-  if(canMove(t->W)){traverse(t->W, str);}
-  if(canMove(t->NE)){traverse(t->NE, str);}
-  if(canMove(t->SE)){traverse(t->SE, str);}
-  if(canMove(t->SW)){traverse(t->SW, str);}
-  if(canMove(t->NW)){traverse(t->NW, str);}
+  if(canMove(t->N, tilePath)){traverse(t->N, str, tilePath);}
+  if(canMove(t->S, tilePath)){traverse(t->S, str, tilePath);}
+  if(canMove(t->E, tilePath)){traverse(t->E, str, tilePath);}
+  if(canMove(t->W, tilePath)){traverse(t->W, str, tilePath);}
+  if(canMove(t->NE, tilePath)){traverse(t->NE, str, tilePath);}
+  if(canMove(t->SE, tilePath)){traverse(t->SE, str, tilePath);}
+  if(canMove(t->SW, tilePath)){traverse(t->SW, str, tilePath);}
+  if(canMove(t->NW, tilePath)){traverse(t->NW, str, tilePath);}
 
   free(str);
+  free(tilePath);
 }
 
 void initFinder(){
@@ -87,29 +107,30 @@ void findWords(Board *board){
   tile->visited=true;
 
   char letters[2] = {tile->letter, '\0'};
+  int tilePath[] = {tile->id};
 
-  if(canMove(tile->N)){traverse(tile->N, letters);}
+  if(canMove(tile->N, NULL)){traverse(tile->N, letters, tilePath);}
   resetBoard(board);
   tile->visited=true;
-  if(canMove(tile->S)){traverse(tile->S, letters);}
+  if(canMove(tile->S, NULL)){traverse(tile->S, letters, tilePath);}
   resetBoard(board);
   tile->visited=true;
-  if(canMove(tile->E)){traverse(tile->E, letters);}
+  if(canMove(tile->E, NULL)){traverse(tile->E, letters, tilePath);}
   resetBoard(board);
   tile->visited=true;
-  if(canMove(tile->W)){traverse(tile->W, letters);}
+  if(canMove(tile->W, NULL)){traverse(tile->W, letters, tilePath);}
   resetBoard(board);
   tile->visited=true;
-  if(canMove(tile->NE)){traverse(tile->NE, letters);}
+  if(canMove(tile->NE, NULL)){traverse(tile->NE, letters, tilePath);}
   resetBoard(board);
   tile->visited=true;
-  if(canMove(tile->SE)){traverse(tile->SE, letters);}
+  if(canMove(tile->SE, NULL)){traverse(tile->SE, letters, tilePath);}
   resetBoard(board);
   tile->visited=true;
-  if(canMove(tile->SW)){traverse(tile->SW, letters);}
+  if(canMove(tile->SW, NULL)){traverse(tile->SW, letters, tilePath);}
   resetBoard(board);
   tile->visited=true;
-  if(canMove(tile->NW)){traverse(tile->NW, letters);}
+  if(canMove(tile->NW, NULL)){traverse(tile->NW, letters, tilePath);}
   resetBoard(board);
   tile->visited=true;
   //fprintf(stdout, "This is the letter %c\n", tile->letter);

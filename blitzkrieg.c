@@ -45,10 +45,12 @@ int main(){
   //  printTile(&board->tiles[i]);
   //}
 
+  initFinder();
   findWords(board);
 
   clearTiles(tiles);
   clearBoard(board);
+  unloadFinder();
 
   //loadLexis();
   //fprintf(stdout, "%s\n", isWord("abacus") ? "True" : "False");
