@@ -8,12 +8,10 @@
 static bool canMove(Tile *t, int *tilePath){
   if(t == NULL) return false;
   int i = 0;
-  if(tilePath != NULL){
   for(i = 0; i < 17; i++){
     if(tilePath[i] == t->id){
       return false;
     }
-  }
   }
   return true;
 }
