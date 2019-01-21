@@ -40,10 +40,10 @@ int main(){
 
   placeLetters(board, "abcdefghijklmnop");
 
-  size_t i = 0;
-  for(i = 0; i < HEIGHT * WIDTH; i++){
-    printTile(&board->tiles[i]);
-  }
+  //size_t i = 0;
+  //for(i = 0; i < HEIGHT * WIDTH; i++){
+  //  printTile(&board->tiles[i]);
+  //}
 
   findWords(board);
 

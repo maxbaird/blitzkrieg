@@ -46,19 +46,30 @@ static void traverse(Tile *t){
   //  return;
   //}
 
-  if(canMove(t->NW)){traverse(t->NW);}
   if(canMove(t->N)){traverse(t->N);}
   if(canMove(t->S)){traverse(t->S);}
-  //if(canMove(t->E)){traverse(t->E);}
-  //if(canMove(t->W)){traverse(t->W);}
-  //if(canMove(t->NE)){traverse(t->NE);}
-  //if(canMove(t->SE)){traverse(t->SE);}
-  //if(canMove(t->SW)){traverse(t->SW);}
-  //t->visited = false;
+  if(canMove(t->E)){traverse(t->E);}
+  if(canMove(t->W)){traverse(t->W);}
+  if(canMove(t->NE)){traverse(t->NE);}
+  if(canMove(t->SE)){traverse(t->SE);}
+  if(canMove(t->SW)){traverse(t->SW);}
+  if(canMove(t->NW)){traverse(t->NW);}
 }
 
 void initFinder(){
   loadLexis();
+}
+
+//Move this into board
+static void resetBoard(Board *board){
+  size_t numTiles = board->dimension.height * board->dimension.width;
+  size_t i = 0;
+
+  Tile *tile = board->tiles;
+  for(i = 0; i < numTiles; i++){
+   tile->visited=false;;
+   tile++;
+  }
 }
 
 void findWords(Board *board){
@@ -66,8 +77,40 @@ void findWords(Board *board){
   //size_t i = 0;
 
   Tile *tile = board->tiles;
+  tile->visited=true;
+  if(canMove(tile->N)){traverse(tile->N);}
+  resetBoard(board);
+  tile->visited=true;
+  fprintf(stdout, "Traversing again\n");
+  if(canMove(tile->S)){traverse(tile->S);}
+  resetBoard(board);
+  tile->visited=true;
+  fprintf(stdout, "Traversing again\n");
+  if(canMove(tile->E)){traverse(tile->E);}
+  resetBoard(board);
+  tile->visited=true;
+  fprintf(stdout, "Traversing again\n");
+  if(canMove(tile->W)){traverse(tile->W);}
+  resetBoard(board);
+  tile->visited=true;
+  fprintf(stdout, "Traversing again\n");
+  if(canMove(tile->NE)){traverse(tile->NE);}
+  resetBoard(board);
+  tile->visited=true;
+  fprintf(stdout, "Traversing again\n");
+  if(canMove(tile->SE)){traverse(tile->SE);}
+  resetBoard(board);
+  tile->visited=true;
+  fprintf(stdout, "Traversing again\n");
+  if(canMove(tile->SW)){traverse(tile->SW);}
+  resetBoard(board);
+  tile->visited=true;
+  fprintf(stdout, "Traversing again\n");
+  if(canMove(tile->NW)){traverse(tile->NW);}
+  resetBoard(board);
+  tile->visited=true;
+  fprintf(stdout, "Traversing again\n");
   //fprintf(stdout, "This is the letter %c\n", tile->letter);
-  traverse(tile);
   fprintf(stdout, "After traversing\n");
   //for(i = 0; i < numTiles; i++){
     //tile++;
