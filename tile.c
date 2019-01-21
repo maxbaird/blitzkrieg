@@ -18,7 +18,6 @@ Tile* makeTiles(size_t n){
     tiles[i].letter = '\0';
     tiles[i].coordinate.x = 0;
     tiles[i].coordinate.y = 0;
-    tiles[i].visited = false;
     tiles[i].N = NULL;
     tiles[i].S = NULL;
     tiles[i].E = NULL;
@@ -27,7 +26,6 @@ Tile* makeTiles(size_t n){
     tiles[i].SE = NULL;
     tiles[i].SW = NULL;
     tiles[i].NW = NULL;
-    memset(tiles[i].rootArray, 0, sizeof(bool) * 15);
   }
 
   return tiles;

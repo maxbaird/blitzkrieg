@@ -5,10 +5,21 @@
 #include "board.h"
 #include "lexis.h"
 
+static Board *BOARD;
+static bool INITIALIZED;
+static size_t TILE_COUNT;
+
+static void checkInit(){
+  if(!INITIALIZED){
+    fprintf(stdout, "Finder not initialized\n");
+    exit(EXIT_FAILURE);
+  }
+}
+
 static bool canMove(Tile *t, int *tilePath){
   if(t == NULL) return false;
-  int i = 0;
-  for(i = 0; i < 17; i++){
+  size_t i = 0;
+  for(i = 0; i < TILE_COUNT; i++){
     if(tilePath[i] == t->id){
       return false;
     }
@@ -17,29 +28,25 @@ static bool canMove(Tile *t, int *tilePath){
 }
 
 static void traverse(Tile *t, char *letters, int *path){
-  char *str = calloc(17, sizeof(char)); //Replace 17 with dimension of board plus 1
-  int *tilePath = calloc(17, sizeof(int));
+  char *str = calloc(TILE_COUNT+1, sizeof(char)); //Allocate one extra for \0
+  int *tilePath = calloc(TILE_COUNT, sizeof(int));
 
-  if(str == NULL){
+  if(str == NULL || tilePath == NULL){
     fprintf(stderr, "Failed to allocate memory for board traversal!\n");
     exit(EXIT_FAILURE);
   }
 
-  if(tilePath == NULL){
-    fprintf(stderr, "Failed to allocate memory for tile path!\n");
-    exit(EXIT_FAILURE);
+  if(path != NULL){ // path will be NULL for initial call
+    memcpy(tilePath, path, sizeof(int) * TILE_COUNT);
   }
 
-  if(path != NULL){
-    memcpy(tilePath, path, sizeof(int) * 17);
-  }
   tilePath[t->id] = t->id;
 
   if(letters != NULL){
     strcpy(str, letters);
     str[strlen(letters)] = t->letter;
   }else{
-    str[0]=t->letter;
+    str[0]=t->letter; //Handle initial traversal call
   }
 
   if(isWord(str)){
@@ -59,22 +66,27 @@ static void traverse(Tile *t, char *letters, int *path){
   free(tilePath);
 }
 
-void initFinder(){
+void initFinder(Board *b){
+  BOARD = b;
+  TILE_COUNT = b->dimension.height * b->dimension.width;
   loadLexis();
+  INITIALIZED = true;
 }
 
-void findWords(Board *board){
-  size_t numTiles = board->dimension.height * board->dimension.width;
+void findWords(){
+  checkInit();
+
   size_t i = 0;
 
-  Tile *tile = board->tiles;
+  Tile *tile = BOARD->tiles;
 
-  for(i = 0; i < numTiles; i++){
+  for(i = 0; i < TILE_COUNT; i++){
     traverse(tile, NULL, NULL);
     tile++;
   }
 }
 
 void unloadFinder(){
+  checkInit();
   unloadLexis();
 }

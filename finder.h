@@ -3,8 +3,8 @@
 
 #include "board.h"
 
-void initFinder();
+void initFinder(Board *b);
 void unloadFinder();
-void findWords(Board *board);
+void findWords();
 
 #endif

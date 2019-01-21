@@ -45,8 +45,8 @@ int main(){
   //  printTile(&board->tiles[i]);
   //}
 
-  initFinder();
-  findWords(board);
+  initFinder(board);
+  findWords();
 
   clearTiles(tiles);
   clearBoard(board);

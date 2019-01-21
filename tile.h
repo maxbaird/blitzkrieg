@@ -19,9 +19,6 @@ typedef struct tile{
   int id;
   char letter;
   Coordinate coordinate;
-  bool rootArray[15];
-  //Path *paths;
-  bool visited;
 
   struct tile *N;
   struct tile *S;
