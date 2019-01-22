@@ -90,7 +90,8 @@ static bool canMove(Tile *t, int *tilePath){
 
 static void traverse(Tile *t, char *letters, int *path){
   char *str = calloc(TILE_COUNT+1, sizeof(char)); //Allocate one extra for \0
-  int *tilePath = calloc(TILE_COUNT, sizeof(int));
+  int *tilePath = malloc(TILE_COUNT * sizeof(int));
+  memset(tilePath, -1, sizeof(int) * TILE_COUNT);
 
   if(str == NULL || tilePath == NULL){
     fprintf(stderr, "Failed to allocate memory for board traversal!\n");
