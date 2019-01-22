@@ -5,7 +5,7 @@
 #include "board.h"
 #include "lexis.h"
 
-#define BUFFER_SIZE  512
+#define BUFFER_DEFAULT_SIZE  512
 #define MAX_WORD_LEN 17
 
 typedef struct word{
@@ -22,7 +22,7 @@ static size_t WORD_COUNT;
 
 static void reset(){
   WORD_COUNT = 0;
-  BUFFSIZE = BUFFER_SIZE;
+  BUFFSIZE = BUFFER_DEFAULT_SIZE;
 
   WORDS = realloc(WORDS, BUFFSIZE * sizeof(Word));
 
@@ -63,7 +63,7 @@ static void addWord(char *str){
   size_t len = strlen(str);
 
   if(len >= 2){ //Ignore one letter words
-    WORDS[WORD_COUNT].len = strlen(str);
+    WORDS[WORD_COUNT].len = len;
     strcpy(WORDS[WORD_COUNT].word, str);
   }else{
     WORD_COUNT--; //Reduce word count if current word is ignored
@@ -88,7 +88,7 @@ static bool canMove(Tile *t, int *tilePath){
   return true;
 }
 
-static void traverse(Tile *t, char *letters, int *path){
+static void traverse(Tile *t, char *letters, int *path, int depth){
   char *str = calloc(TILE_COUNT+1, sizeof(char)); //Allocate one extra for \0
   int *tilePath = malloc(TILE_COUNT * sizeof(int));
   memset(tilePath, -1, sizeof(int) * TILE_COUNT);
@@ -116,14 +116,16 @@ static void traverse(Tile *t, char *letters, int *path){
     WORD_COUNT++;
   }
 
-  if(canMove(t->N, tilePath)){traverse(t->N, str, tilePath);}
-  if(canMove(t->S, tilePath)){traverse(t->S, str, tilePath);}
-  if(canMove(t->E, tilePath)){traverse(t->E, str, tilePath);}
-  if(canMove(t->W, tilePath)){traverse(t->W, str, tilePath);}
-  if(canMove(t->NE, tilePath)){traverse(t->NE, str, tilePath);}
-  if(canMove(t->SE, tilePath)){traverse(t->SE, str, tilePath);}
-  if(canMove(t->SW, tilePath)){traverse(t->SW, str, tilePath);}
-  if(canMove(t->NW, tilePath)){traverse(t->NW, str, tilePath);}
+  if(depth < 8){
+    if(canMove(t->N, tilePath)){traverse(t->N, str, tilePath, depth+1);}
+    if(canMove(t->S, tilePath)){traverse(t->S, str, tilePath, depth+1);}
+    if(canMove(t->E, tilePath)){traverse(t->E, str, tilePath, depth+1);}
+    if(canMove(t->W, tilePath)){traverse(t->W, str, tilePath, depth+1);}
+    if(canMove(t->NE, tilePath)){traverse(t->NE, str, tilePath, depth+1);}
+    if(canMove(t->SE, tilePath)){traverse(t->SE, str, tilePath, depth+1);}
+    if(canMove(t->SW, tilePath)){traverse(t->SW, str, tilePath, depth+1);}
+    if(canMove(t->NW, tilePath)){traverse(t->NW, str, tilePath, depth+1);}
+  }
 
   free(str);
   free(tilePath);
@@ -134,7 +136,7 @@ void initFinder(Board *board){
   TILE_COUNT = BOARD->dimension.height * BOARD->dimension.width;
   loadLexis();
 
-  BUFFSIZE = BUFFER_SIZE;
+  BUFFSIZE = BUFFER_DEFAULT_SIZE;
   WORD_COUNT = 0;
 
   WORDS = malloc(BUFFSIZE * sizeof(Word));
@@ -154,7 +156,7 @@ void findWords(){
   Tile *tile = BOARD->tiles;
 
   for(i = 0; i < TILE_COUNT; i++){
-    traverse(tile, NULL, NULL);
+    traverse(tile, NULL, NULL, 0);
     tile++;
   }
   sortAndPrint();
