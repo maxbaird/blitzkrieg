@@ -1,6 +1,9 @@
+//heh heh heh...
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "tile.h"
 #include "board.h"
 #include "lexis.h"
@@ -11,13 +14,37 @@
 #define MAX_LETTERS 16
 #define PROMPT ">> "
 
-//heh heh heh...
+static void consumeNewline(){
+  int c = 0;
+  while((c = getchar()) != '\n' && c != EOF);
+}
 
-/*static*/ void blitzkrieg(Board *board){
+static bool inputValid(char *input){
+  size_t i = 0;
+  size_t len = 0;
+
+  len = strlen(input);
+
+  if(len < MAX_LETTERS){
+    fprintf(stderr, "%d letters needed; %zu entered!\n", MAX_LETTERS, len);
+    return false;
+  }
+
+  for(i = 0; i < len; i++){
+    input[i] = tolower(input[i]);
+
+    if(!isalpha(input[i])){
+      fprintf(stderr, "invalid character '%c'. Only letters allowed.\n", input[i]);
+      return false;
+    }
+  }
+  return true;
+}
+
+static void blitzkrieg(Board *board){
   char letters[MAX_LETTERS+1] = {'\0'};
   char *res = NULL;
   char *p = NULL;
-  int c = 0;
 
   for(;;){
     fprintf(stdout, "\n%s", PROMPT);
@@ -31,16 +58,13 @@
 
     if(res == NULL){break;}
 
-    if(strlen(letters) != MAX_LETTERS){
-      fprintf(stderr, "%d letters needed; %zu entered!\n", MAX_LETTERS, strlen(letters));
-      continue;
+    if(inputValid(letters)){
+      placeLetters(board, letters);
+      findWords();
     }
 
-    placeLetters(board, letters);
-    findWords();
-
     //Consume newline that causes next call to fgets to skip
-    while((c = getchar()) != '\n' && c != EOF);
+    consumeNewline();
   }
   fprintf(stdout, "\n");
 }
