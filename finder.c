@@ -56,8 +56,23 @@ static void sortAndPrint(){
   }
 }
 
+static bool wordExists(char *str){
+  size_t i = 0;
+
+  for(i = 0; i < WORD_COUNT; i++){
+    if(strcmp(str, WORDS[i].word) == 0){
+      return true;
+    }
+  }
+  return false;
+}
+
 static void addWord(char *str, int root){
-  if(WORD_COUNT >= BUFFSIZE - 1){
+  if(wordExists(str)){ //Skip adding duplicates
+    return;
+  }
+
+  if(WORD_COUNT >= BUFFSIZE - 1){ //Determine if more space for words is required
     BUFFSIZE += BUFFSIZE;
     WORDS = realloc(WORDS, BUFFSIZE * sizeof(Word));
     if(WORDS == NULL){
@@ -72,8 +87,7 @@ static void addWord(char *str, int root){
     WORDS[WORD_COUNT].rootIdx = root;
     WORDS[WORD_COUNT].len = len;
     strcpy(WORDS[WORD_COUNT].word, str);
-  }else{
-    WORD_COUNT--; //Reduce word count if current word is ignored
+    WORD_COUNT++;
   }
 }
 
@@ -130,7 +144,6 @@ static void traverse(Tile *t, char *letters, Path *path, int depth){
 
   if(isWord(str)){
     addWord(str, tilePath->root);
-    WORD_COUNT++;
   }
 
   if(depth < MAX_WORD_LEN){ //Avoids finding all 16 combinations
