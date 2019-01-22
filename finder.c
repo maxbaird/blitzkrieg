@@ -9,8 +9,9 @@
 #define MAX_WORD_LEN 8
 
 typedef struct word{
+  int rootIdx;
   size_t len;
-  char word[MAX_WORD_LEN];
+  char word[MAX_WORD_LEN+1];
 }Word;
 
 static Board *BOARD;
@@ -19,6 +20,11 @@ static size_t TILE_COUNT;
 static Word *WORDS;
 static size_t BUFFSIZE;
 static size_t WORD_COUNT;
+
+typedef struct path{
+  int root;
+  int *traversePath;
+}Path;
 
 static void reset(){
   WORD_COUNT = 0;
@@ -46,11 +52,11 @@ static void sortAndPrint(){
   size_t i = 0;
 
   for(i = 0; i < WORD_COUNT; i++){
-    fprintf(stdout, "%s\n", WORDS[i].word);
+    fprintf(stdout, "%s \t: [%d]\n", WORDS[i].word, WORDS[i].rootIdx);
   }
 }
 
-static void addWord(char *str){
+static void addWord(char *str, int root){
   if(WORD_COUNT >= BUFFSIZE - 1){
     BUFFSIZE += BUFFSIZE;
     WORDS = realloc(WORDS, BUFFSIZE * sizeof(Word));
@@ -63,6 +69,7 @@ static void addWord(char *str){
   size_t len = strlen(str);
 
   if(len >= 2){ //Ignore one letter words
+    WORDS[WORD_COUNT].rootIdx = root;
     WORDS[WORD_COUNT].len = len;
     strcpy(WORDS[WORD_COUNT].word, str);
   }else{
@@ -77,33 +84,42 @@ static void checkInit(){
   }
 }
 
-static bool canMove(Tile *t, int *tilePath){
+static bool canMove(Tile *t, Path *tilePath){
   if(t == NULL) return false;
   size_t i = 0;
   for(i = 0; i < TILE_COUNT; i++){
-    if(tilePath[i] == t->id){
+    if(tilePath->traversePath[i] == t->id){
       return false;
     }
   }
   return true;
 }
 
-static void traverse(Tile *t, char *letters, int *path, int depth){
+static void traverse(Tile *t, char *letters, Path *path, int depth){
   char *str = calloc(MAX_WORD_LEN+1, sizeof(char)); //Allocate one extra for \0
-  int *tilePath = malloc(TILE_COUNT * sizeof(int));
+  Path *tilePath = malloc(sizeof(Path));
+  tilePath->traversePath = malloc(TILE_COUNT * sizeof(int));
 
   if(str == NULL || tilePath == NULL){
     fprintf(stderr, "Failed to allocate memory for board traversal!\n");
     exit(EXIT_FAILURE);
   }
 
-  memset(tilePath, -1, sizeof(int) * TILE_COUNT);
-
-  if(path != NULL){ // path will be NULL for initial call
-    memcpy(tilePath, path, sizeof(int) * TILE_COUNT);
+  if(tilePath->traversePath == NULL){
+    fprintf(stderr, "Failed to allocate memory for board traversal!\n");
+    exit(EXIT_FAILURE);
   }
 
-  tilePath[t->id] = t->id;
+  memset(tilePath->traversePath, -1, sizeof(int) * TILE_COUNT);
+
+  if(path == NULL){ // path will be NULL for initial call
+    tilePath->root = t->id; //Keep track of the starting tile
+  }else{
+    memcpy(tilePath->traversePath, path->traversePath, sizeof(int) * TILE_COUNT);
+    tilePath->root = path->root;
+  }
+
+  tilePath->traversePath[t->id] = t->id;
 
   if(letters != NULL){
     strcpy(str, letters);
@@ -113,7 +129,7 @@ static void traverse(Tile *t, char *letters, int *path, int depth){
   }
 
   if(isWord(str)){
-    addWord(str);
+    addWord(str, tilePath->root);
     WORD_COUNT++;
   }
 
@@ -129,6 +145,7 @@ static void traverse(Tile *t, char *letters, int *path, int depth){
   }
 
   free(str);
+  free(tilePath->traversePath);
   free(tilePath);
 }
 
@@ -160,6 +177,7 @@ void findWords(){
     traverse(tile, NULL, NULL, 0);
     tile++;
   }
+
   sortAndPrint();
   reset();
 }

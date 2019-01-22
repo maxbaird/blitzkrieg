@@ -10,11 +10,6 @@ typedef struct coordinate{
   unsigned int y;
 }Coordinate;
 
-typedef struct path{
-  bool visited;
-  bool complete;
-}Path;
-
 typedef struct tile{
   int id;
   char letter;

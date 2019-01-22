@@ -13,7 +13,7 @@
 
 //heh heh heh...
 
-static void blitzkrieg(Board *board){
+/*static*/ void blitzkrieg(Board *board){
   char letters[MAX_LETTERS+1] = {'\0'};
   char *res = NULL;
   char *p = NULL;
@@ -42,6 +42,7 @@ static void blitzkrieg(Board *board){
     //Consume newline that causes next call to fgets to skip
     while((c = getchar()) != '\n' && c != EOF);
   }
+  fprintf(stdout, "\n");
 }
 
 int main(){
@@ -50,6 +51,8 @@ int main(){
   initFinder(board);
 
   blitzkrieg(board);
+  //placeLetters(board, "itsnuelatkudadls");
+  //findWords();
 
   clearTiles(tiles);
   clearBoard(board);
