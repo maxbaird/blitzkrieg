@@ -13,7 +13,7 @@
 
 //heh heh heh...
 
-/*static*/ void blitzkrieg(Board *board){
+static void blitzkrieg(Board *board){
   char letters[MAX_LETTERS+1] = {'\0'};
   char *res = NULL;
   char *p = NULL;
@@ -49,9 +49,7 @@ int main(){
   Board *board = makeBoard(tiles, HEIGHT, WIDTH);
   initFinder(board);
 
-  //blitzkrieg(board);
-  placeLetters(board, "abcdefghijklmnop");
-  findWords();
+  blitzkrieg(board);
 
   clearTiles(tiles);
   clearBoard(board);

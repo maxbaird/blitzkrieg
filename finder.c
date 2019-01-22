@@ -6,7 +6,7 @@
 #include "lexis.h"
 
 #define BUFFER_DEFAULT_SIZE  512
-#define MAX_WORD_LEN 17
+#define MAX_WORD_LEN 8
 
 typedef struct word{
   size_t len;
@@ -89,14 +89,15 @@ static bool canMove(Tile *t, int *tilePath){
 }
 
 static void traverse(Tile *t, char *letters, int *path, int depth){
-  char *str = calloc(TILE_COUNT+1, sizeof(char)); //Allocate one extra for \0
+  char *str = calloc(MAX_WORD_LEN+1, sizeof(char)); //Allocate one extra for \0
   int *tilePath = malloc(TILE_COUNT * sizeof(int));
-  memset(tilePath, -1, sizeof(int) * TILE_COUNT);
 
   if(str == NULL || tilePath == NULL){
     fprintf(stderr, "Failed to allocate memory for board traversal!\n");
     exit(EXIT_FAILURE);
   }
+
+  memset(tilePath, -1, sizeof(int) * TILE_COUNT);
 
   if(path != NULL){ // path will be NULL for initial call
     memcpy(tilePath, path, sizeof(int) * TILE_COUNT);
@@ -116,7 +117,7 @@ static void traverse(Tile *t, char *letters, int *path, int depth){
     WORD_COUNT++;
   }
 
-  if(depth < 8){
+  if(depth < MAX_WORD_LEN){ //Avoids finding all 16 combinations
     if(canMove(t->N, tilePath)){traverse(t->N, str, tilePath, depth+1);}
     if(canMove(t->S, tilePath)){traverse(t->S, str, tilePath, depth+1);}
     if(canMove(t->E, tilePath)){traverse(t->E, str, tilePath, depth+1);}
@@ -139,7 +140,7 @@ void initFinder(Board *board){
   BUFFSIZE = BUFFER_DEFAULT_SIZE;
   WORD_COUNT = 0;
 
-  WORDS = malloc(BUFFSIZE * sizeof(Word));
+  WORDS = calloc(BUFFSIZE, sizeof(Word));
 
   if(WORDS == NULL){
     fprintf(stderr, "Failed to allocate memory for found words\n");
