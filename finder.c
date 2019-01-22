@@ -37,7 +37,7 @@ static int compareWords(const void *w1, const void *w2){
   Word *word1 = (Word *)w1;
   Word *word2 = (Word *)w2;
 
-  return (int)word2->len - (int)word1->len;
+  return (int)word1->len - (int)word2->len;
 }
 
 static void sortAndPrint(){
