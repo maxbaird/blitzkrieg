@@ -12,22 +12,7 @@ debug : clean $(PROJECT)
 $(PROJECT) : blitzkrieg.o tile.o board.o lexis.o avltree.o finder.o
 	$(CC) -o $@ $^
 
-blitzkrieg.o : blitzkrieg.c
-	$(CC) $(CFLAGS) $<
-
-tile.o : tile.c
-	$(CC) $(CFLAGS) $<
-
-board.o : board.c
-	$(CC) $(CFLAGS) $<
-
-lexis.o : lexis.c
-	$(CC) $(CFLAGS) $<
-
-avltree.o : avltree.c
-	$(CC) $(CFLAGS) $<
-
-finder.o : finder.c
+%.o : %.c
 	$(CC) $(CFLAGS) $<
 
 clean :
