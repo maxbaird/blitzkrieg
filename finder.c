@@ -6,7 +6,6 @@
 #include "lexis.h"
 
 #define BUFFER_DEFAULT_SIZE  512
-#define MAX_WORD_LEN 8
 
 typedef struct word{
   int rootIdx;

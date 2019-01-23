@@ -14,7 +14,7 @@ static void setPaths(Board *b, Tile *t){
   size_t idx = (height * Y) + X; // Calculate the index of the current tile
 
   /* Since the board is perfect square of 4x4 tiles the index of the adjacent
-   * tiles can be calculated by moving forward and backward by fixed amoutns
+   * tiles can be calculated by moving forward and backward by fixed amounts
    * from the current tile.
    *
    * This method will of course generate invalid tile positions, so the
@@ -63,14 +63,14 @@ Board *makeBoard(Tile *tiles, size_t height, size_t width){
 
   size_t i = 0;
   size_t j = 0;
-  Tile *currentTile = tiles;
+  Tile *tile = board->tiles;
 
   for(i = 0; i < height; i++){
     for(j = 0; j < width; j++){
-      currentTile->coordinate.x = j;
-      currentTile->coordinate.y = i;
-      setPaths(board, currentTile);
-      currentTile++;
+      tile->coordinate.x = j;
+      tile->coordinate.y = i;
+      setPaths(board, tile);
+      tile++;
     }
   }
 

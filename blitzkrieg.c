@@ -17,7 +17,7 @@
 static void consumeNewline(){
   int c = 0;
   //Consume newline that causes next call to fgets to skip
-   while((c = getchar()) != '\n' && c != EOF);
+  while((c = getchar()) != '\n' && c != EOF);
 }
 
 static bool inputValid(char *input){

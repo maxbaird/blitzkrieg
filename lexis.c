@@ -4,11 +4,7 @@
 #include "lexis.h"
 #include "avltree.h"
 
-#define WORD_AMT 6
-#define WORD_LEN 32
-
 #define LEXIS_PATH "lexis"
-#define MAX_WORD_LEN 16
 #define BUFFER_SIZE 128
 
 static AvlTree lexisTree;
