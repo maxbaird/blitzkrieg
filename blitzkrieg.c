@@ -16,12 +16,19 @@
 
 static void consumeNewline(){
   int c = 0;
-  while((c = getchar()) != '\n' && c != EOF);
+  //Consume newline that causes next call to fgets to skip
+   while((c = getchar()) != '\n' && c != EOF);
 }
 
 static bool inputValid(char *input){
   size_t i = 0;
   size_t len = 0;
+  char *p = NULL;
+
+  //Replace newline with terminator
+  if((p=strchr(input, '\n')) != NULL){
+    *p = '\0';
+  }
 
   len = strlen(input);
 
@@ -35,6 +42,7 @@ static bool inputValid(char *input){
 
     if(!isalpha(input[i])){
       fprintf(stderr, "invalid character '%c'. Only letters allowed.\n", input[i]);
+      consumeNewline();
       return false;
     }
   }
@@ -44,28 +52,20 @@ static bool inputValid(char *input){
 static void blitzkrieg(Board *board){
   char letters[MAX_LETTERS+1] = {'\0'};
   char *res = NULL;
-  char *p = NULL;
 
   for(;;){
     fprintf(stdout, "\n%s", PROMPT);
 
     res = fgets(letters, MAX_LETTERS+1, stdin);
 
-    //Replace newline with terminator
-    if((p=strchr(letters, '\n')) != NULL){
-      *p = '\0';
-    }
-
     if(res == NULL){break;}
+    if(!inputValid(letters)){continue;}
 
-    if(inputValid(letters)){
-      placeLetters(board, letters);
-      findWords();
-    }
-
-    //Consume newline that causes next call to fgets to skip
+    placeLetters(board, letters);
+    findWords();
     consumeNewline();
   }
+
   fprintf(stdout, "\n");
 }
 
