@@ -85,6 +85,10 @@ void placeLetters(Board *b, char *letters){
   }
 }
 
+size_t getBoardSize(Board *b){
+  return b->dimension.height * b->dimension.width;
+}
+
 void clearBoard(Board *b){
   free(b);
 }

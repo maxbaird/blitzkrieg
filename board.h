@@ -15,6 +15,7 @@ typedef struct board{
 
 Board *makeBoard(Tile *tiles, size_t height, size_t width);
 void placeLetters(Board *b, char *letters);
+size_t getBoardSize(Board *b);
 void clearBoard(Board *b);
 
 #endif /* __BOARD_H__ */
