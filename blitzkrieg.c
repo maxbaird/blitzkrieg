@@ -148,16 +148,19 @@ static void init(Tile **tiles, Board **board){
     exit(EXIT_FAILURE);
   }
 
-  for(i = 0; i < boardSize; i++){
-    WORD_COLUMNS[i].tileIndex = 0;
-    WORD_COLUMNS[i].buffSize = DEFAULT_BUFFER_SIZE;
-    WORD_COLUMNS[i].words = calloc(DEFAULT_BUFFER_SIZE, sizeof(Word));
-    WORD_COLUMNS[i].wordCount = 0;
+  WordColumn *wc = WORD_COLUMNS;
 
-    if(WORD_COLUMNS[i].words == NULL){
+  for(i = 0; i < boardSize; i++){
+    wc->tileIndex = 0;
+    wc->buffSize = DEFAULT_BUFFER_SIZE;
+    wc->words = calloc(DEFAULT_BUFFER_SIZE, sizeof(Word));
+    wc->wordCount = 0;
+
+    if(wc->words == NULL){
       fprintf(stderr, "Failed to allocate memory for word\n");
       exit(EXIT_FAILURE);
     }
+    wc++; //Move to next word column
   }
 }
 
