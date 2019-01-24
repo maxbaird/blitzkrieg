@@ -205,18 +205,6 @@ void blitzkrieg(){
   Tile *tiles = NULL;
   Board *board = NULL;
   init(&tiles, &board);
-
-  //if(tiles == NULL){
-  //  fprintf(stdout, "Some thing wrong\n");
-  //}else{
-  //  fprintf(stdout, "tiles All good\n");
-  //}
-
-  //if(board == NULL){
-  //  fprintf(stdout, "Something wrong here\n");
-  //}else{
-  //  fprintf(stdout, "board All good\n");
-  //}
   initFinder(board);
 
   start(board);

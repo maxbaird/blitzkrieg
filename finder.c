@@ -6,44 +6,14 @@
 #include "board.h"
 #include "lexis.h"
 
-//#define BUFFER_DEFAULT_SIZE  512
-
-//typedef struct word{
-//  int rootIdx;
-//  size_t len;
-//  char word[MAX_WORD_LEN+1];
-//}Word;
-//
-//typedef struct wordColumn{
-//  size_t tileIndex;
-//  Word *words;
-//}WordColumn;
-
 static Board *BOARD;
 static bool INITIALIZED;
 static size_t TILE_COUNT;
-//static WordColumn *WORD_COLUMN;
-//static Word *WORDS;
-//static size_t BUFFSIZE;
-//static size_t WORD_COUNT;
 
 typedef struct path{
   int root;
   int *traversePath;
 }Path;
-
-//static void reset(){
-//  WORD_COUNT = 0;
-//  BUFFSIZE = BUFFER_DEFAULT_SIZE;
-//
-//  WORDS = realloc(WORDS, BUFFSIZE * sizeof(Word));
-//
-//  if(WORDS == NULL){
-//    fprintf(stderr, "Resetting words failed!\n");
-//    exit(EXIT_FAILURE);
-//  }
-//  memset(WORDS, 0, BUFFSIZE * sizeof(Word));
-//}
 
 //static int compareWords(const void *w1, const void *w2){
 //  Word *word1 = (Word *)w1;
@@ -59,41 +29,6 @@ typedef struct path{
 //
 //  for(i = 0; i < WORD_COUNT; i++){
 //    fprintf(stdout, "%s \t: [%d]\n", WORDS[i].word, WORDS[i].rootIdx);
-//  }
-//}
-
-//static bool wordExists(char *str){
-//  size_t i = 0;
-//
-//  for(i = 0; i < WORD_COUNT; i++){
-//    if(strcmp(str, WORDS[i].word) == 0){
-//      return true;
-//    }
-//  }
-//  return false;
-//}
-
-//static void addWord(char *str, int root){
-//  if(wordExists(str)){ //Skip adding duplicates
-//    return;
-//  }
-//
-//  if(WORD_COUNT >= BUFFSIZE - 1){ //Determine if more space for words is required
-//    BUFFSIZE += BUFFSIZE;
-//    WORDS = realloc(WORDS, BUFFSIZE * sizeof(Word));
-//    if(WORDS == NULL){
-//      fprintf(stderr, "Failed to create more space for words!\n");
-//      exit(EXIT_FAILURE);
-//    }
-//  }
-//
-//  size_t len = strlen(str);
-//
-//  if(len >= 2){ //Ignore one letter words
-//    WORDS[WORD_COUNT].rootIdx = root;
-//    WORDS[WORD_COUNT].len = len;
-//    strcpy(WORDS[WORD_COUNT].word, str);
-//    WORD_COUNT++;
 //  }
 //}
 
@@ -173,23 +108,6 @@ void initFinder(Board *board){
   TILE_COUNT = getBoardSize(board);
   loadLexis();
 
-//  BUFFSIZE = BUFFER_DEFAULT_SIZE;
-//  WORD_COUNT = 0;
-//
-//  WORD_COLUMN = malloc(TILE_COUNT * sizeof(WordColumn));
-//
-//  if(WORD_COLUMN == NULL){
-//    fprintf(stderr, "Failed to allocate memory for word column\n");
-//    exit(EXIT_FAILURE);
-//  }
-//
-//  WORDS = calloc(BUFFSIZE, sizeof(Word));
-//
-//  if(WORDS == NULL){
-//    fprintf(stderr, "Failed to allocate memory for found words\n");
-//    exit(EXIT_FAILURE);
-//  }
-
   INITIALIZED = true;
 }
 
@@ -203,14 +121,10 @@ void findWords(){
     traverse(tile, NULL, NULL, 0);
     tile++;
   }
-
-//  sortAndPrint();
-//  reset();
 }
 
 void unloadFinder(){
   checkInit();
   unloadLexis();
-//  free(WORDS);
   INITIALIZED = false;
 }
