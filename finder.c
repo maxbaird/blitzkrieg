@@ -13,9 +13,15 @@ typedef struct word{
   char word[MAX_WORD_LEN+1];
 }Word;
 
+typedef struct wordColumn{
+  size_t tileIndex;
+  Word *words;
+}WordColumn;
+
 static Board *BOARD;
 static bool INITIALIZED;
 static size_t TILE_COUNT;
+static WordColumn *WORD_COLUMN;
 static Word *WORDS;
 static size_t BUFFSIZE;
 static size_t WORD_COUNT;
@@ -169,6 +175,13 @@ void initFinder(Board *board){
   BUFFSIZE = BUFFER_DEFAULT_SIZE;
   WORD_COUNT = 0;
 
+  WORD_COLUMN = malloc(TILE_COUNT * sizeof(WordColumn)); 
+
+  if(WORD_COLUMN == NULL){
+    fprintf(stderr, "Failed to allocate memory for word column\n");
+    exit(EXIT_FAILURE);
+  }
+  
   WORDS = calloc(BUFFSIZE, sizeof(Word));
 
   if(WORDS == NULL){
