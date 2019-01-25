@@ -83,7 +83,7 @@ static size_t longestList(size_t start, size_t end){
   WordColumn *wc = WORD_COLUMNS;
   size_t i = 0;
   size_t idx = 0;
-  end = end > 16 ? 16: end;
+  end = end >= 16 ? 16: end;
 
   for(i = start; i < end; i++){
     if(wc[i].wordCount > idx){
@@ -100,7 +100,7 @@ static void printWords(Board *board){
   size_t k = 0;
   size_t longestColumn = 0;
   size_t boardSize = getBoardSize(board);
-  size_t colsPerLine = 6; //pass this as argument to this function
+  size_t colsPerLine = 16; //pass this as argument to this function
   size_t colHeaderIdx = 0;
 
   for(i = 0; i < boardSize; i+=colsPerLine){
@@ -110,28 +110,18 @@ static void printWords(Board *board){
     for(j = 0; j < longestColumn; j++){
       for(k = colHeaderIdx; k < colHeaderIdx+colsPerLine; k++){
         if(k == boardSize)break;
-        if(wc[k].wordCount <= longestColumn){
+        if(wc[k].wordCount > j){
           size_t len = strlen(wc[k].words[j].word);
-          fprintf(stdout, "%s%*s", wc[k].words[j].word, (k==colHeaderIdx+colsPerLine)?0:(int)padding(len),"");
+          fprintf(stdout, "%s%*s", wc[k].words[j].word, (k==(colHeaderIdx+colsPerLine)-1)?0:(int)padding(len),"");
         }else{
           fprintf(stdout, "%*s", (int)padding(0),"");
         }
       }
-      fprintf(stdout, "--\n");
+      fprintf(stdout, "\n");
     }
     colHeaderIdx += colsPerLine;
       fprintf(stdout, "\n");
   }
-
-  //for(i = 0; i < getBoardSize(board); i++){
-  //  fprintf(stdout, "[%zu]\n", wc->tileIndex + 1);
-
-  //  for(j = 0; j < wc->wordCount; j++){
-  //    fprintf(stdout, "%s\n", wc->words[j].word);
-  //  }
-  //  fprintf(stdout, "\n");
-  //  wc++; //Go to next column of words
-  //}
 }
 
 static void reset(Board *board){
@@ -217,6 +207,7 @@ static void init(Tile **tiles, Board **board){
       fprintf(stderr, "Failed to allocate memory for word\n");
       exit(EXIT_FAILURE);
     }
+    //memset(wc->words->word, 0, sizeof(char) * MAX_WORD_LEN+1);
     wc++; //Move to next word column
   }
 }
@@ -239,8 +230,8 @@ void addWord(char *str, int rootTileIdx){
     return;
   }
 
-  if(wc->wordCount >= wc->buffSize - 1){
-    wc->buffSize  += wc->buffSize;
+  if(wc->wordCount >= (wc->buffSize-1)){
+    wc->buffSize  += DEFAULT_BUFFER_SIZE;
     wc->words = realloc(wc->words, wc->buffSize * sizeof(Word));
 
     if(wc->words == NULL){
