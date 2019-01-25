@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <errno.h>
+#include <limits.h>
 #include "blitzkrieg.h"
 #include "tile.h"
 #include "board.h"
@@ -17,6 +19,7 @@
 #define DEFAULT_BUFFER_SIZE 32
 
 static WordColumn *WORD_COLUMNS;
+static int WORD_COLUMNS_PER_LINE;
 
 static void consumeNewline(){
   int c = 0;
@@ -102,7 +105,7 @@ static void start(Board *board){
     //placeLetters(board, "abcdefghijklmnop");
     placeLetters(board, letters);
     findWords();
-    printWords(board, WORD_COLUMNS);
+    printWords(board, WORD_COLUMNS, WORD_COLUMNS_PER_LINE);
     reset(board);
     consumeNewline();
     //break; //REMEMBER TO REMOVE THIS!!!
@@ -111,11 +114,29 @@ static void start(Board *board){
   fprintf(stdout, "\n");
 }
 
-static void init(Tile **tiles, Board **board){
+static void handleArgs(int argc, char *argv[]){
+	char *p = NULL;
+	long cols = 0;
+	if(argc >= 2){
+		cols = strtol(argv[1], &p, 10);
+
+		if (errno != 0 || *p != '\0' || cols > MAX_LETTERS || cols < 1) {
+				perror("Error with cols argument: ");
+				fprintf(stderr, "Will print %d word columns per line\n", COLUMNS_PER_LINE);
+				WORD_COLUMNS_PER_LINE = -1;
+		} else {
+		    WORD_COLUMNS_PER_LINE = cols;
+		}
+	}
+}
+
+static void init(Tile **tiles, Board **board, int argc, char *argv[]){
   *tiles = makeTiles(HEIGHT * WIDTH);
   *board = makeBoard(*tiles, HEIGHT, WIDTH);
   size_t i = 0;
   size_t boardSize = getBoardSize(*board);
+
+	handleArgs(argc, argv);
 
   WORD_COLUMNS = malloc(boardSize * sizeof(WordColumn));
 
@@ -180,10 +201,10 @@ void addWord(char *str, int rootTileIdx){
   wc->wordCount++;
 }
 
-void blitzkrieg(){
+void blitzkrieg(int argc, char *argv[]){
   Tile *tiles = NULL;
   Board *board = NULL;
-  init(&tiles, &board);
+  init(&tiles, &board, argc, argv);
   initFinder(board);
 
   start(board);

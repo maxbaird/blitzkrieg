@@ -4,9 +4,9 @@
 #include <stdlib.h>
 #include "blitzkrieg.h"
 
-int main(){
+int main(int argc, char *argv[]){
 
-  blitzkrieg();
+  blitzkrieg(argc, argv);
 
   return EXIT_SUCCESS;
 }

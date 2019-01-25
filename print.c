@@ -69,10 +69,9 @@ static void sortColumns(size_t boardSize, WordColumn *wc){
   }
 }
 
-void printWords(Board *board, WordColumn *wc){
-  size_t colsPerLine = 16; //pass this as argument to this function
+void printWords(Board *board, WordColumn *wc, int cols){
+  size_t colsPerLine = (cols == -1) ? COLUMNS_PER_LINE : cols;
 
-  //WordColumn *wc = WORD_COLUMNS;
   size_t i = 0;
   size_t j = 0;
   size_t k = 0;

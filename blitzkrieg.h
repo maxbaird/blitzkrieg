@@ -15,7 +15,7 @@ typedef struct wordColumn{
   Word *words;
 }WordColumn;
 
-void blitzkrieg();
+void blitzkrieg(int argc, char *argv[]);
 void addWord(char *str, int root);
 
 #endif /* __BLITZKRIEG_H__ */
