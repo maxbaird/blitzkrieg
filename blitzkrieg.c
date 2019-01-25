@@ -2,10 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "blitzkrieg.h"
 #include "tile.h"
 #include "board.h"
 #include "lexis.h"
 #include "finder.h"
+#include "print.h"
 
 #define HEIGHT 4
 #define WIDTH 4
@@ -13,21 +15,6 @@
 #define PROMPT ">> "
 
 #define DEFAULT_BUFFER_SIZE 32
-#define WORDS_PER_ROW 10
-#define BOLDCYAN "\033[1m\033[36m"
-#define RESET "\x1B[0m"
-
-typedef struct word{
-  size_t len;
-  char word[MAX_WORD_LEN+1];
-}Word;
-
-typedef struct wordColumn{
-  size_t tileIndex;
-  size_t wordCount;
-  size_t buffSize;
-  Word *words;
-}WordColumn;
 
 static WordColumn *WORD_COLUMNS;
 
@@ -37,7 +24,7 @@ static void consumeNewline(){
   while((c = getchar()) != '\n' && c != EOF);
 }
 
-/*static*/ bool inputValid(char *input){
+static bool inputValid(char *input){
   size_t i = 0;
   size_t len = 0;
   char *p = NULL;
@@ -64,95 +51,6 @@ static void consumeNewline(){
     }
   }
   return true;
-}
-
-static size_t padding(size_t len){
-  return (MAX_WORD_LEN - len) + 2;
-}
-
-static void printColumnHeaders(size_t start, size_t end){
-  size_t i = 0;
-  char str[8] = {'\0'};
-
-  for(i = start; i < end; i++){
-    sprintf(str, "[%zu]", i+1);
-    fprintf(stdout, BOLDCYAN"[%zu]%*s"RESET, i+1, (int)padding(strlen(str)),"");
-    memset(str, 0, sizeof str);
-  }
-  fprintf(stdout, "\n");
-}
-
-static size_t longestList(size_t start, size_t end){
-  WordColumn *wc = WORD_COLUMNS;
-  size_t i = 0;
-  size_t idx = 0;
-
-  for(i = start; i < end; i++){
-    if(wc[i].wordCount > idx){
-      idx = wc[i].wordCount;
-    }
-  }
-  return idx;
-}
-
-static int compareWords(const void *w1, const void *w2){
-  Word *word1 = (Word *)w1;
-  Word *word2 = (Word *)w2;
-
-  return (int)word2->len - (int)word1->len;
-}
-
-static void sortColumns(size_t boardSize){
-  WordColumn *wc = WORD_COLUMNS;
-  size_t i = 0;
-
-  for(i = 0; i < boardSize; i++){
-    qsort(wc->words, wc->wordCount, sizeof(Word), compareWords);
-    wc++;
-  }
-}
-
-static void printWords(Board *board){
-  size_t colsPerLine = 16; //pass this as argument to this function
-
-  WordColumn *wc = WORD_COLUMNS;
-  size_t i = 0;
-  size_t j = 0;
-  size_t k = 0;
-  size_t rowCount = 0;
-  size_t longestColumn = 0;
-  size_t boardSize = getBoardSize(board);
-  size_t colHeaderStart = 0;
-  size_t colHeaderEnd = colHeaderStart + colsPerLine;
-
-  sortColumns(boardSize);
-
-  for(i = 0; i < boardSize; i+=colsPerLine){
-    printColumnHeaders(colHeaderStart, colHeaderEnd);
-    longestColumn = longestList(colHeaderStart, colHeaderEnd);
-
-    for(j = 0; j < longestColumn; j++){
-      if(rowCount == WORDS_PER_ROW){
-        rowCount = 0;
-        fprintf(stdout, "\n");
-        printColumnHeaders(colHeaderStart, colHeaderEnd);
-      }rowCount++;
-      for(k = colHeaderStart; k < colHeaderEnd; k++){
-        if(wc[k].wordCount > j){
-          size_t len = strlen(wc[k].words[j].word);
-          fprintf(stdout, "%s%*s", wc[k].words[j].word, (k==(colHeaderEnd)-1) ? 0: (int)padding(len),"");
-        }else{
-          fprintf(stdout, "%*s", (int)padding(0),"");
-        }
-      }
-      fprintf(stdout, "\n");
-    }
-    fprintf(stdout, "\n");
-
-    colHeaderStart += colsPerLine;
-    colHeaderEnd = colHeaderStart + colsPerLine;
-    colHeaderEnd = colHeaderEnd >= boardSize ? boardSize : colHeaderEnd;
-  }
 }
 
 static void reset(Board *board){
@@ -204,7 +102,7 @@ static void start(Board *board){
     //placeLetters(board, "abcdefghijklmnop");
     placeLetters(board, letters);
     findWords();
-    printWords(board);
+    printWords(board, WORD_COLUMNS);
     reset(board);
     consumeNewline();
     //break; //REMEMBER TO REMOVE THIS!!!
@@ -238,7 +136,6 @@ static void init(Tile **tiles, Board **board){
       fprintf(stderr, "Failed to allocate memory for word\n");
       exit(EXIT_FAILURE);
     }
-    //memset(wc->words->word, 0, sizeof(char) * MAX_WORD_LEN+1);
     wc++; //Move to next word column
   }
 }
