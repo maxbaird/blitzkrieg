@@ -13,6 +13,7 @@
 #define PROMPT ">> "
 
 #define DEFAULT_BUFFER_SIZE 32
+#define WORDS_PER_ROW 10
 
 typedef struct word{
   size_t len;
@@ -83,7 +84,6 @@ static size_t longestList(size_t start, size_t end){
   WordColumn *wc = WORD_COLUMNS;
   size_t i = 0;
   size_t idx = 0;
-  end = end >= 16 ? 16: end;
 
   for(i = start; i < end; i++){
     if(wc[i].wordCount > idx){
@@ -93,34 +93,63 @@ static size_t longestList(size_t start, size_t end){
   return idx;
 }
 
+static int compareWords(const void *w1, const void *w2){
+  Word *word1 = (Word *)w1;
+  Word *word2 = (Word *)w2;
+
+  return (int)word2->len - (int)word1->len;
+}
+
+static void sortColumns(size_t boardSize){
+  WordColumn *wc = WORD_COLUMNS;
+  size_t i = 0;
+
+  for(i = 0; i < boardSize; i++){
+    qsort(wc->words, wc->wordCount, sizeof(Word), compareWords);
+    wc++;
+  }
+}
+
 static void printWords(Board *board){
+  size_t colsPerLine = 16; //pass this as argument to this function
+
   WordColumn *wc = WORD_COLUMNS;
   size_t i = 0;
   size_t j = 0;
   size_t k = 0;
+  size_t rowCount = 0;
   size_t longestColumn = 0;
   size_t boardSize = getBoardSize(board);
-  size_t colsPerLine = 16; //pass this as argument to this function
-  size_t colHeaderIdx = 0;
+  size_t colHeaderStart = 0;
+  size_t colHeaderEnd = colHeaderStart + colsPerLine;
+
+  sortColumns(boardSize);
 
   for(i = 0; i < boardSize; i+=colsPerLine){
-    printColumnHeaders(colHeaderIdx, colHeaderIdx+colsPerLine);
-    longestColumn = longestList(colHeaderIdx, colHeaderIdx+colsPerLine);
+    printColumnHeaders(colHeaderStart, colHeaderEnd);
+    longestColumn = longestList(colHeaderStart, colHeaderEnd);
 
     for(j = 0; j < longestColumn; j++){
-      for(k = colHeaderIdx; k < colHeaderIdx+colsPerLine; k++){
-        if(k == boardSize)break;
+      if(rowCount == WORDS_PER_ROW){
+        rowCount = 0;
+        fprintf(stdout, "\n");
+        printColumnHeaders(colHeaderStart, colHeaderEnd);
+      }rowCount++;
+      for(k = colHeaderStart; k < colHeaderEnd; k++){
         if(wc[k].wordCount > j){
           size_t len = strlen(wc[k].words[j].word);
-          fprintf(stdout, "%s%*s", wc[k].words[j].word, (k==(colHeaderIdx+colsPerLine)-1)?0:(int)padding(len),"");
+          fprintf(stdout, "%s%*s", wc[k].words[j].word, (k==(colHeaderEnd)-1) ? 0: (int)padding(len),"");
         }else{
           fprintf(stdout, "%*s", (int)padding(0),"");
         }
       }
       fprintf(stdout, "\n");
     }
-    colHeaderIdx += colsPerLine;
-      fprintf(stdout, "\n");
+    fprintf(stdout, "\n");
+
+    colHeaderStart += colsPerLine;
+    colHeaderEnd = colHeaderStart + colsPerLine;
+    colHeaderEnd = colHeaderEnd >= boardSize ? boardSize : colHeaderEnd;
   }
 }
 
