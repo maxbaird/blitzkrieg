@@ -5,7 +5,7 @@
 #include "avltree.h"
 
 #define LEXIS_PATH "lexis"
-#define BUFFER_SIZE 128
+#define BUFFER_SIZE 1024
 
 static AvlTree lexisTree;
 
@@ -23,23 +23,18 @@ void loadLexis(){
     exit(EXIT_FAILURE);
   }
 
-  while(fgets(word, BUFFER_SIZE, fp) != NULL){
-    //Remove newline
-    char *pos = NULL;
-    if((pos = strchr(word, '\n')) != NULL){
-      *pos='\0';
-    }
-
+  while(fscanf(fp, "%s", word) == 1){
     len = strlen(word);
+
     if(len <= MAX_WORD_LEN){
-      tmp = malloc((len+1) * sizeof(char));
+      tmp = malloc((MAX_WORD_LEN+1) * sizeof(char));
 
       if(tmp == NULL){
         fprintf(stderr, "Failed to allocate memory when loading lexis\n");
         exit(EXIT_FAILURE);
       }
 
-      sscanf(word, "%s", tmp);
+      strncpy(tmp, word, MAX_WORD_LEN);
       lexisTree = Insert((void *)tmp, lexisTree);
     }
   }

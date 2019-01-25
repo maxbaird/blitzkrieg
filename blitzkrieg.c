@@ -117,6 +117,7 @@ static void start(Board *board){
 static void handleArgs(int argc, char *argv[]){
 	char *p = NULL;
 	long cols = 0;
+
 	if(argc >= 2){
 		cols = strtol(argv[1], &p, 10);
 
@@ -127,6 +128,8 @@ static void handleArgs(int argc, char *argv[]){
 		} else {
 		    WORD_COLUMNS_PER_LINE = cols;
 		}
+	}else{
+		WORD_COLUMNS_PER_LINE = -1;
 	}
 }
 
