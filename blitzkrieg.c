@@ -83,12 +83,12 @@ static size_t longestList(size_t start, size_t end){
   WordColumn *wc = WORD_COLUMNS;
   size_t i = 0;
   size_t idx = 0;
+  end = end > 16 ? 16: end;
 
   for(i = start; i < end; i++){
-    if(wc->wordCount > idx){
-      idx = wc->wordCount;
+    if(wc[i].wordCount > idx){
+      idx = wc[i].wordCount;
     }
-    wc++;
   }
   return idx;
 }
@@ -100,8 +100,8 @@ static void printWords(Board *board){
   size_t k = 0;
   size_t longestColumn = 0;
   size_t boardSize = getBoardSize(board);
-  int colsPerLine = 3; //pass this as argument to this function
-  unsigned int colHeaderIdx = 0;
+  size_t colsPerLine = 6; //pass this as argument to this function
+  size_t colHeaderIdx = 0;
 
   for(i = 0; i < boardSize; i+=colsPerLine){
     printColumnHeaders(colHeaderIdx, colHeaderIdx+colsPerLine);
@@ -109,15 +109,18 @@ static void printWords(Board *board){
 
     for(j = 0; j < longestColumn; j++){
       for(k = colHeaderIdx; k < colHeaderIdx+colsPerLine; k++){
-        if(wc[k].wordCount < j){
-          //fprintf(stdout, "%s%*s", wc[k].words[j].word, (int)padding(strlen(wc[k].words[j].word)),"");
+        if(k == boardSize)break;
+        if(wc[k].wordCount <= longestColumn){
+          size_t len = strlen(wc[k].words[j].word);
+          fprintf(stdout, "%s%*s", wc[k].words[j].word, (k==colHeaderIdx+colsPerLine)?0:(int)padding(len),"");
         }else{
-          //fprintf(stdout, "%s%*s", " ", (int)padding(1),"");
+          fprintf(stdout, "%*s", (int)padding(0),"");
         }
       }
-      fprintf(stdout, "\n\n");
+      fprintf(stdout, "--\n");
     }
     colHeaderIdx += colsPerLine;
+      fprintf(stdout, "\n");
   }
 
   //for(i = 0; i < getBoardSize(board); i++){
