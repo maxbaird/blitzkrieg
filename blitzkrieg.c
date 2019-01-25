@@ -14,6 +14,8 @@
 
 #define DEFAULT_BUFFER_SIZE 32
 #define WORDS_PER_ROW 10
+#define BOLDCYAN "\033[1m\033[36m"
+#define RESET "\x1B[0m"
 
 typedef struct word{
   size_t len;
@@ -74,7 +76,7 @@ static void printColumnHeaders(size_t start, size_t end){
 
   for(i = start; i < end; i++){
     sprintf(str, "[%zu]", i+1);
-    fprintf(stdout, "[%zu]%*s", i+1, (int)padding(strlen(str)),"");
+    fprintf(stdout, BOLDCYAN"[%zu]%*s"RESET, i+1, (int)padding(strlen(str)),"");
     memset(str, 0, sizeof str);
   }
   fprintf(stdout, "\n");

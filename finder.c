@@ -15,23 +15,6 @@ typedef struct path{
   int *traversePath;
 }Path;
 
-//static int compareWords(const void *w1, const void *w2){
-//  Word *word1 = (Word *)w1;
-//  Word *word2 = (Word *)w2;
-//
-//  return (int)word1->len - (int)word2->len;
-//}
-
-//static void sortAndPrint(){
-//  qsort(WORDS, WORD_COUNT, sizeof(Word), compareWords);
-//
-//  size_t i = 0;
-//
-//  for(i = 0; i < WORD_COUNT; i++){
-//    fprintf(stdout, "%s \t: [%d]\n", WORDS[i].word, WORDS[i].rootIdx);
-//  }
-//}
-
 static void checkInit(){
   if(!INITIALIZED){
     fprintf(stdout, "Finder not initialized\n");
