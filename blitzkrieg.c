@@ -34,7 +34,7 @@ static void consumeNewline(){
   while((c = getchar()) != '\n' && c != EOF);
 }
 
-static bool inputValid(char *input){
+/*static*/ bool inputValid(char *input){
   size_t i = 0;
   size_t len = 0;
   char *p = NULL;
@@ -63,20 +63,72 @@ static bool inputValid(char *input){
   return true;
 }
 
+static size_t padding(size_t len){
+  return (MAX_WORD_LEN - len) + 2;
+}
+
+static void printColumnHeaders(size_t start, size_t end){
+  size_t i = 0;
+  char str[8] = {'\0'};
+
+  for(i = start; i < end; i++){
+    sprintf(str, "[%zu]", i+1);
+    fprintf(stdout, "[%zu]%*s", i+1, (int)padding(strlen(str)),"");
+    memset(str, 0, sizeof str);
+  }
+  fprintf(stdout, "\n");
+}
+
+static size_t longestList(size_t start, size_t end){
+  WordColumn *wc = WORD_COLUMNS;
+  size_t i = 0;
+  size_t idx = 0;
+
+  for(i = start; i < end; i++){
+    if(wc->wordCount > idx){
+      idx = wc->wordCount;
+    }
+    wc++;
+  }
+  return idx;
+}
+
 static void printWords(Board *board){
   WordColumn *wc = WORD_COLUMNS;
   size_t i = 0;
   size_t j = 0;
+  size_t k = 0;
+  size_t longestColumn = 0;
+  size_t boardSize = getBoardSize(board);
+  int colsPerLine = 3; //pass this as argument to this function
+  unsigned int colHeaderIdx = 0;
 
-  for(i = 0; i < getBoardSize(board); i++){
-    fprintf(stdout, "[%zu]\n", wc->tileIndex + 1);
+  for(i = 0; i < boardSize; i+=colsPerLine){
+    printColumnHeaders(colHeaderIdx, colHeaderIdx+colsPerLine);
+    longestColumn = longestList(colHeaderIdx, colHeaderIdx+colsPerLine);
 
-    for(j = 0; j < wc->wordCount; j++){
-      fprintf(stdout, "%s\n", wc->words[j].word);
+    for(j = 0; j < longestColumn; j++){
+      for(k = colHeaderIdx; k < colHeaderIdx+colsPerLine; k++){
+        if(wc[k].wordCount < j){
+          //fprintf(stdout, "%s%*s", wc[k].words[j].word, (int)padding(strlen(wc[k].words[j].word)),"");
+        }else{
+          //fprintf(stdout, "%s%*s", " ", (int)padding(1),"");
+        }
+      }
+      fprintf(stdout, "\n\n");
     }
-    fprintf(stdout, "\n");
-    wc++; //Go to next column of words
+    colHeaderIdx += colsPerLine;
   }
+
+  //for(i = 0; i < getBoardSize(board); i++){
+  //  fprintf(stdout, "[%zu]\n", wc->tileIndex + 1);
+
+  //  for(j = 0; j < wc->wordCount; j++){
+  //    fprintf(stdout, "%s\n", wc->words[j].word);
+  //  }
+  //  fprintf(stdout, "\n");
+  //  wc++; //Go to next column of words
+  //}
 }
 
 static void reset(Board *board){
@@ -125,11 +177,13 @@ static void start(Board *board){
     if(res == NULL){break;}
     if(!inputValid(letters)){continue;}
 
+    //placeLetters(board, "abcdefghijklmnop");
     placeLetters(board, letters);
     findWords();
     printWords(board);
     reset(board);
     consumeNewline();
+    //break; //REMEMBER TO REMOVE THIS!!!
   }
 
   fprintf(stdout, "\n");
