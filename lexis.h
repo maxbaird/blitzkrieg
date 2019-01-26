@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#define MAX_WORD_LEN 8
+#define MAX_WORD_LEN 9
 
 void loadLexis();
 bool isWord(char *letters);
