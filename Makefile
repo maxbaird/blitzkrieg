@@ -1,6 +1,6 @@
 PROJECT       = blitzkrieg.out
 CC            = gcc
-CFLAGS        = -c -Wall -Werror -Wextra
+CFLAGS        = -c -O3 -Wall -Werror -Wextra
 
 .PHONY : all clean
 
@@ -12,7 +12,7 @@ debug : clean $(PROJECT)
 $(PROJECT) : main.o blitzkrieg.o tile.o board.o lexis.o avltree.o finder.o print.o
 	$(CC) -o $@ $^
 
-%.o : %.c
+%.o : %.c %.h
 	$(CC) $(CFLAGS) $<
 
 clean :
