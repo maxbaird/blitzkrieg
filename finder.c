@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <pthread.h>
 #include "blitzkrieg.h"
 #include "finder.h"
 #include "board.h"
@@ -94,16 +95,72 @@ void initFinder(Board *board){
   INITIALIZED = true;
 }
 
+/////////////////////////////////////////////////////////////////
+typedef struct threadInfo{
+  Tile *tile;
+  char *letter;
+  Path *path;
+  int depth;
+}ThreadInfo;
+
+static void *threadTraverse(void *info){
+  ThreadInfo *threadInfo = (ThreadInfo *)info;
+  traverse(threadInfo->tile, threadInfo->letter, threadInfo->path, threadInfo->depth);
+  pthread_exit(NULL);
+}
+/////////////////////////////////////////////////////////////////
+
 void findWords(){
   checkInit();
+
+  int rc = 0;
+  pthread_t *traverseThread = malloc(TILE_COUNT * sizeof(pthread_t));
+  ThreadInfo *threadInfo = malloc(TILE_COUNT * sizeof(ThreadInfo));
+
+  if(traverseThread == NULL || threadInfo == NULL){
+    fprintf(stderr, "Failed to allocate space for threads!\n");
+    exit(EXIT_FAILURE);
+  }
+
+  /* Initialize and set thread detached attribute */
+  pthread_attr_t attr;
+  pthread_attr_init(&attr);
+  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 
   size_t i = 0;
   Tile *tile = BOARD->tiles;
 
   for(i = 0; i < TILE_COUNT; i++){
-    traverse(tile, NULL, NULL, 0);
-    tile++;
+    threadInfo[i].tile = &tile[i];
+    threadInfo[i].letter = NULL;
+    threadInfo[i].path = NULL;
+    threadInfo[i].depth = 0;
+    rc = pthread_create(&traverseThread[i], &attr, threadTraverse, (void *)&threadInfo[i]);
+
+    if(rc != 0){
+      fprintf(stderr, "Error; return code from pthread_create() is %d\n", rc);
+      exit(EXIT_FAILURE);
+    }
+
+    //traverse(tile, NULL, NULL, 0);
+    //tile++;
+    //threadInfo++;
+    //traverseThreads++;
   }
+
+  /* Free attribute and wait for other threads */
+  pthread_attr_destroy(&attr);
+  for(i = 0; i < TILE_COUNT; i++){
+    rc = pthread_join(traverseThread[i], NULL);
+
+    if(rc != 0){
+      fprintf(stderr, "Error; return code from pthread_join() is %d\n", rc);
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  free(traverseThread);
+  free(threadInfo);
 }
 
 void unloadFinder(){

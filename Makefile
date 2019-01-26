@@ -10,7 +10,7 @@ debug : CFLAGS += -g3
 debug : clean $(PROJECT)
 
 $(PROJECT) : main.o blitzkrieg.o tile.o board.o lexis.o avltree.o finder.o print.o
-	$(CC) -o $@ $^
+	$(CC) -o $@ $^ -lpthread
 
 %.o : %.c %.h
 	$(CC) $(CFLAGS) $<
