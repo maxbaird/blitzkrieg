@@ -70,7 +70,7 @@ static void traverse(Tile *t, char *letters, Path *path, int depth){
     addWord(str, tilePath->root);
   }
 
-  if(depth <= MAX_WORD_LEN){ //Avoids finding all 16 combinations
+  if(depth < MAX_WORD_LEN){ //Avoids finding all 16 combinations
     if(canMove(t->N, tilePath)){traverse(t->N, str, tilePath, depth+1);}
     if(canMove(t->S, tilePath)){traverse(t->S, str, tilePath, depth+1);}
     if(canMove(t->E, tilePath)){traverse(t->E, str, tilePath, depth+1);}
