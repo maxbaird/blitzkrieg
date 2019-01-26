@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include <limits.h>
+#include <stdbool.h>
 #include "blitzkrieg.h"
 #include "tile.h"
 #include "board.h"
@@ -102,13 +103,11 @@ static void start(Board *board){
     if(res == NULL){break;}
     if(!inputValid(letters)){continue;}
 
-    //placeLetters(board, "abcdefghijklmnop");
     placeLetters(board, letters);
     findWords();
     printWords(board, WORD_COLUMNS, WORD_COLUMNS_PER_LINE);
     reset(board);
     consumeNewline();
-    //break; //REMEMBER TO REMOVE THIS!!!
   }
 
   fprintf(stdout, "\n");
@@ -116,21 +115,30 @@ static void start(Board *board){
 
 static void handleArgs(int argc, char *argv[]){
 	char *p = NULL;
-	long cols = 0;
+	size_t columns = 0;
+  bool correct = true;
 
-	if(argc >= 2){
-		cols = strtol(argv[1], &p, 10);
+  WORD_COLUMNS_PER_LINE = DEFAULT_COLUMNS_PER_LINE;
 
-		if (errno != 0 || *p != '\0' || cols > MAX_LETTERS || cols < 1) {
-				perror("Error with cols argument: ");
-				fprintf(stderr, "Will print %d word columns per line\n", COLUMNS_PER_LINE);
-				WORD_COLUMNS_PER_LINE = -1;
-		} else {
-		    WORD_COLUMNS_PER_LINE = cols;
-		}
-	}else{
-		WORD_COLUMNS_PER_LINE = -1;
-	}
+	if(argc < 2){
+    return;
+  }
+
+  columns = strtol(argv[1], &p, 10);
+
+  if (errno != 0 || *p != '\0') {
+    perror("Error with word columns argument: ");
+    correct = false;
+  } else if(columns > MAX_LETTERS || columns < 1){
+    fprintf(stderr, "Word columns must be between 1 and %d\n", MAX_LETTERS);
+    correct = false;
+  }else{
+    WORD_COLUMNS_PER_LINE = columns;
+  }
+
+  if(!correct){
+    fprintf(stderr, "Defaulting to %d word columns per line\n", DEFAULT_COLUMNS_PER_LINE);
+  }
 }
 
 static void init(Tile **tiles, Board **board, int argc, char *argv[]){

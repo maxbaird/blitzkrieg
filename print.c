@@ -41,7 +41,7 @@ static void printColumnHeaders(size_t start, size_t end){
   fprintf(stdout, "\n");
 }
 
-static size_t longestList(size_t start, size_t end, WordColumn *wc){
+static size_t getLongestColumn(size_t start, size_t end, WordColumn *wc){
   size_t i = 0;
   size_t idx = 0;
 
@@ -50,7 +50,7 @@ static size_t longestList(size_t start, size_t end, WordColumn *wc){
       idx = wc[i].wordCount;
     }
   }
-  return idx;
+  return idx; //Return the index of the longest column
 }
 
 static int compareWords(const void *w1, const void *w2){
@@ -69,44 +69,50 @@ static void sortColumns(size_t boardSize, WordColumn *wc){
   }
 }
 
-void printWords(Board *board, WordColumn *wc, int cols){
-  size_t colsPerLine = (cols == -1) ? COLUMNS_PER_LINE : cols;
-
+void printWords(Board *board, WordColumn *wc, size_t colsPerLine){
   size_t i = 0;
   size_t j = 0;
   size_t k = 0;
-  size_t rowCount = 0;
+  size_t numPrintedRows = 0;
   size_t longestColumn = 0;
   size_t boardSize = getBoardSize(board);
   size_t colHeaderStart = 0;
   size_t colHeaderEnd = colHeaderStart + colsPerLine;
 
-  sortColumns(boardSize, wc);
+  sortColumns(boardSize, wc); //Print longest words first
 
   for(i = 0; i < boardSize; i+=colsPerLine){
     printColumnHeaders(colHeaderStart, colHeaderEnd);
-    longestColumn = longestList(colHeaderStart, colHeaderEnd, wc);
+
+    //This is later used as a loop control to ensure that
+    //all words of the longest column is printed
+    longestColumn = getLongestColumn(colHeaderStart, colHeaderEnd, wc);
+    numPrintedRows = 0;
 
     for(j = 0; j < longestColumn; j++){
-      if(rowCount == WORDS_PER_ROW){
-        rowCount = 0;
-        fprintf(stdout, "\n");
+      if(numPrintedRows == WORDS_PER_ROW){ //Reprint column headers if necessary
+        numPrintedRows = 0;
+        fprintf(stdout, "\n"); //Go to new line before reprinting column headers
         printColumnHeaders(colHeaderStart, colHeaderEnd);
-      }rowCount++;
+      }
+
+      numPrintedRows++;
+
+      //This loops prints a word under each column
       for(k = colHeaderStart; k < colHeaderEnd; k++){
         if(wc[k].wordCount > j){
           size_t len = strlen(wc[k].words[j].word);
           fprintf(stdout, "%s%*s", wc[k].words[j].word, (k==(colHeaderEnd)-1) ? 0: (int)padding(len),"");
-        }else{
+        }else{//If the current column has no more words, print nothing
           fprintf(stdout, "%*s", (int)padding(0),"");
         }
       }
-      fprintf(stdout, "\n");
+      fprintf(stdout, "\n"); //Move to new line to print another row of words
     }
-    fprintf(stdout, "\n");
+    fprintf(stdout, "\n"); //Force remaining of columns onto new line
 
-    colHeaderStart += colsPerLine;
-    colHeaderEnd = colHeaderStart + colsPerLine;
-    colHeaderEnd = colHeaderEnd >= boardSize ? boardSize : colHeaderEnd;
+    colHeaderStart += colsPerLine; //More start column up by number of columns to print per line
+    colHeaderEnd = colHeaderStart + colsPerLine; //Move end column up also
+    colHeaderEnd = colHeaderEnd >= boardSize ? boardSize : colHeaderEnd; //Keep the end to the size of the board
   }
 }
