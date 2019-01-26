@@ -9,7 +9,7 @@
 
 static Board *BOARD;
 static bool INITIALIZED;
-static size_t TILE_COUNT;
+static size_t BOARD_SIZE;
 
 typedef struct path{
   int root;
@@ -33,7 +33,7 @@ static void checkInit(){
 static bool canMove(Tile *t, Path *tilePath){
   if(t == NULL) return false;
   size_t i = 0;
-  for(i = 0; i < TILE_COUNT; i++){
+  for(i = 0; i < BOARD_SIZE; i++){
     if(tilePath->traversePath[i] == t->id){
       return false;
     }
@@ -44,7 +44,7 @@ static bool canMove(Tile *t, Path *tilePath){
 static void traverse(Tile *t, char *letters, Path *path, int depth){
   char *str = calloc(MAX_WORD_LEN+1, sizeof(char)); //Allocate one extra for \0
   Path *tilePath = malloc(sizeof(Path));
-  tilePath->traversePath = malloc(TILE_COUNT * sizeof(int));
+  tilePath->traversePath = malloc(BOARD_SIZE * sizeof(int));
 
   if(str == NULL || tilePath == NULL){
     fprintf(stderr, "Failed to allocate memory for board traversal!\n");
@@ -56,12 +56,12 @@ static void traverse(Tile *t, char *letters, Path *path, int depth){
     exit(EXIT_FAILURE);
   }
 
-  memset(tilePath->traversePath, -1, sizeof(int) * TILE_COUNT);
+  memset(tilePath->traversePath, -1, sizeof(int) * BOARD_SIZE);
 
   if(path == NULL){ // path will be NULL for initial call
     tilePath->root = t->id; //Keep track of the starting tile
   }else{
-    memcpy(tilePath->traversePath, path->traversePath, sizeof(int) * TILE_COUNT);
+    memcpy(tilePath->traversePath, path->traversePath, sizeof(int) * BOARD_SIZE);
     tilePath->root = path->root;
   }
 
@@ -102,7 +102,7 @@ static void *threadTraverse(void *info){
 
 void initFinder(Board *board){
   BOARD = board;
-  TILE_COUNT = getBoardSize(board);
+  BOARD_SIZE = getBoardSize(board);
   loadLexis();
 
   INITIALIZED = true;
@@ -112,8 +112,8 @@ void findWords(){
   checkInit();
 
   int rc = 0;
-  pthread_t *traverseThread = malloc(TILE_COUNT * sizeof(pthread_t));
-  ThreadInfo *threadInfo = malloc(TILE_COUNT * sizeof(ThreadInfo));
+  pthread_t *traverseThread = malloc(BOARD_SIZE * sizeof(pthread_t));
+  ThreadInfo *threadInfo = malloc(BOARD_SIZE * sizeof(ThreadInfo));
 
   if(traverseThread == NULL || threadInfo == NULL){
     fprintf(stderr, "Failed to allocate space for threads!\n");
@@ -128,7 +128,7 @@ void findWords(){
   size_t i = 0;
   Tile *tile = BOARD->tiles;
 
-  for(i = 0; i < TILE_COUNT; i++){
+  for(i = 0; i < BOARD_SIZE; i++){
     threadInfo[i].tile = &tile[i];
     threadInfo[i].letter = NULL;
     threadInfo[i].path = NULL;
@@ -144,7 +144,7 @@ void findWords(){
 
   /* Free attribute and wait for other threads */
   pthread_attr_destroy(&attr);
-  for(i = 0; i < TILE_COUNT; i++){
+  for(i = 0; i < BOARD_SIZE; i++){
     rc = pthread_join(traverseThread[i], NULL);
 
     if(rc != 0){
