@@ -111,6 +111,12 @@ void initFinder(Board *board){
 void findWords(){
   checkInit();
 
+  /* Blitzkrieg is not inherently thread-safe, that being said, it is
+   * worthy to keep in mind that the threads used here only work because
+   * they perform read-only operations on the binary tree list and each
+   * thread updates its own array of found words.
+   */
+
   int rc = 0;
   pthread_t *traverseThread = malloc(BOARD_SIZE * sizeof(pthread_t));
   ThreadInfo *threadInfo = malloc(BOARD_SIZE * sizeof(ThreadInfo));
@@ -129,6 +135,7 @@ void findWords(){
   Tile *tile = BOARD->tiles;
 
   for(i = 0; i < BOARD_SIZE; i++){
+    /* Set up argument for next thread */
     threadInfo[i].tile = &tile[i];
     threadInfo[i].letter = NULL;
     threadInfo[i].path = NULL;
