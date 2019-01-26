@@ -228,7 +228,7 @@ void addWord(char *str, int rootTileIdx){
 
   size_t len = strlen(str);
 
-  if(len <= 2){ //Ignore one letter words
+  if(len < 2){ //Ignore one letter words
     return;
   }
 

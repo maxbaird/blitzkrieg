@@ -16,6 +16,13 @@ typedef struct path{
   int *traversePath;
 }Path;
 
+typedef struct threadInfo{
+  Tile *tile;
+  char *letter;
+  Path *path;
+  int depth;
+}ThreadInfo;
+
 static void checkInit(){
   if(!INITIALIZED){
     fprintf(stdout, "Finder not initialized\n");
@@ -87,6 +94,12 @@ static void traverse(Tile *t, char *letters, Path *path, int depth){
   free(tilePath);
 }
 
+static void *threadTraverse(void *info){
+  ThreadInfo *threadInfo = (ThreadInfo *)info;
+  traverse(threadInfo->tile, threadInfo->letter, threadInfo->path, threadInfo->depth);
+  pthread_exit(NULL);
+}
+
 void initFinder(Board *board){
   BOARD = board;
   TILE_COUNT = getBoardSize(board);
@@ -94,21 +107,6 @@ void initFinder(Board *board){
 
   INITIALIZED = true;
 }
-
-/////////////////////////////////////////////////////////////////
-typedef struct threadInfo{
-  Tile *tile;
-  char *letter;
-  Path *path;
-  int depth;
-}ThreadInfo;
-
-static void *threadTraverse(void *info){
-  ThreadInfo *threadInfo = (ThreadInfo *)info;
-  traverse(threadInfo->tile, threadInfo->letter, threadInfo->path, threadInfo->depth);
-  pthread_exit(NULL);
-}
-/////////////////////////////////////////////////////////////////
 
 void findWords(){
   checkInit();
@@ -135,17 +133,13 @@ void findWords(){
     threadInfo[i].letter = NULL;
     threadInfo[i].path = NULL;
     threadInfo[i].depth = 0;
+
     rc = pthread_create(&traverseThread[i], &attr, threadTraverse, (void *)&threadInfo[i]);
 
     if(rc != 0){
       fprintf(stderr, "Error; return code from pthread_create() is %d\n", rc);
       exit(EXIT_FAILURE);
     }
-
-    //traverse(tile, NULL, NULL, 0);
-    //tile++;
-    //threadInfo++;
-    //traverseThreads++;
   }
 
   /* Free attribute and wait for other threads */
