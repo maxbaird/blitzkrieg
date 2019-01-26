@@ -14,7 +14,11 @@
 
 #define HEIGHT 4
 #define WIDTH 4
-#define MAX_LETTERS 16
+#define MAX_LETTERS HEIGHT * WIDTH
+
+#define WELCOME_FILE_NAME "welcome"
+#define WELCOME_BUFFER_SIZE 2048
+
 #define PROMPT ">> "
 
 #define DEFAULT_BUFFER_SIZE 32
@@ -91,9 +95,28 @@ static void freeWordColumns(Board *board){
   free(WORD_COLUMNS);
 }
 
+static void displayWelcome(){
+  FILE *fp = fopen(WELCOME_FILE_NAME, "r");
+  char msg[WELCOME_BUFFER_SIZE] = {'\0'};
+
+  if(fp == NULL){
+    fprintf(stderr, "Error opening welcome message file!\n");
+    return;
+  }
+
+  fprintf(stdout, "\n");
+  while(fgets(msg, WELCOME_BUFFER_SIZE, fp) != NULL){
+    fprintf(stdout, "%s", msg);
+  }
+
+  fclose(fp);
+}
+
 static void start(Board *board){
   char letters[MAX_LETTERS+1] = {'\0'};
   char *res = NULL;
+
+  displayWelcome();
 
   for(;;){
     fprintf(stdout, "\n%s", PROMPT);
@@ -110,7 +133,7 @@ static void start(Board *board){
     consumeNewline();
   }
 
-  fprintf(stdout, "\n");
+  fprintf(stdout, "Bye!\n");
 }
 
 static void handleArgs(int argc, char *argv[]){
