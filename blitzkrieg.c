@@ -126,10 +126,13 @@ static void handleArgs(int argc, char *argv[]){
 
   columns = strtol(argv[1], &p, 10);
 
-  if (errno != 0 || *p != '\0') {
-    perror("Error with word columns argument: ");
+  if (errno != 0) {
+    perror("Error with word columns argument");
     correct = false;
-  } else if(columns > MAX_LETTERS || columns < 1){
+  }else if(*p != '\0'){
+    fprintf(stderr, "Error reading columns argument\n");
+    correct = false;
+  }else if(columns > MAX_LETTERS || columns < 1){
     fprintf(stderr, "Word columns must be between 1 and %d\n", MAX_LETTERS);
     correct = false;
   }else{
