@@ -44,6 +44,10 @@ static bool inputValid(char *input){
 
   len = strlen(input);
 
+  if(len == 0){
+    return false;
+  }
+
   if(len < MAX_LETTERS){
     fprintf(stderr, "%d letters needed; %zu entered!\n", MAX_LETTERS, len);
     return false;
