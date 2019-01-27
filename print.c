@@ -73,14 +73,11 @@ static void sortColumns(size_t boardSize, WordColumn *wc){
 
 static void strlenLongestWord(WordColumn *wc, size_t boardSize){
   size_t i = 0;
-  size_t j = 0;
   size_t len = 0;
 
   for(i = 0; i < boardSize; i++){
-    for(j = 0; j < wc->wordCount; j++){
-      if(wc->words[j].len > len){
-        len = wc->words[j].len;
-      }
+    if(wc->longestWordLen > len){
+      len = wc->longestWordLen;
     }
     wc++; //Next column of words
   }

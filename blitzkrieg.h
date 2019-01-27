@@ -12,6 +12,7 @@ typedef struct wordColumn{
   size_t tileIndex;
   size_t wordCount;
   size_t buffSize;
+  size_t longestWordLen;
   Word *words;
 }WordColumn;
 

@@ -187,8 +187,9 @@ static void init(Tile **tiles, Board **board, int argc, char *argv[]){
   for(i = 0; i < boardSize; i++){
     wc->tileIndex = 0;
     wc->buffSize = DEFAULT_BUFFER_SIZE;
-    wc->words = calloc(DEFAULT_BUFFER_SIZE, sizeof(Word));
     wc->wordCount = 0;
+    wc->longestWordLen = 0;
+    wc->words = calloc(DEFAULT_BUFFER_SIZE, sizeof(Word));
 
     if(wc->words == NULL){
       fprintf(stderr, "Failed to allocate memory for word\n");
@@ -235,6 +236,13 @@ void addWord(char *str, int rootTileIdx){
   wc->tileIndex = rootTileIdx;
   wc->words[wc->wordCount].len = len;
   strcpy(wc->words[wc->wordCount].word, str);
+
+  if(wc->longestWordLen < len){
+    //Keep track of longest word
+    //This is useful for printing word columns later
+    wc->longestWordLen = len;
+  }
+
   wc->wordCount++;
 }
 
