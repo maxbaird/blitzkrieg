@@ -15,6 +15,7 @@ typedef struct config{
   char LEXIS_FILE_NAME[FILE_NAME_LENGTH];
 }Config;
 
+void readConfig();
 Config getConfig();
 
 #endif /* __CONFIG_H__ */

@@ -136,6 +136,16 @@ static void restoreDefaultConfig(const char* value){
   }
 }
 
+static void printConfig(){ //TODO just for testing, remove later
+  fprintf(stdout, "MAX_WORD_LENGTH = %zu\n", config.MAX_WORD_LENGTH);
+  fprintf(stdout, "MIN_WORD_LENGTH = %zu\n", config.MIN_WORD_LENGTH);
+  fprintf(stdout, "MAX_WORDS_PER_ROW = %zu\n", config.MAX_WORDS_PER_ROW);
+  fprintf(stdout, "WORD_COLUMNS_PER_ROW = %zu\n", config.WORD_COLUMNS_PER_ROW);
+  fprintf(stdout, "SORT_DESCENDING = %s\n", config.SORT_DESCENDING?"True":"False");
+  fprintf(stdout, "REMOVE_MULTIPLE_COLUMN_DUPLICATES = %s\n", config.REMOVE_MULTIPLE_COLUMN_DUPLICATES?"True":"False");
+  fprintf(stdout, "LEXIS_FILE_NAME = %s\n", config.LEXIS_FILE_NAME);
+}
+
 void readConfig(){
   FILE *fp = fopen(FILENAME, "r");
   char line[LINE_BUFFER] = {'\0'};
@@ -159,18 +169,20 @@ void readConfig(){
 
     if(!success){
       fprintf(stderr, "Error reading \"%s\" value. Default configuration value will be used.\n", readErr);
+      fflush(stderr);
       restoreDefaultConfig(readErr);
       free(readErr);
     }
   }
-  fprintf(stdout, "%zu\n", config.MAX_WORD_LENGTH);
-  fprintf(stdout, "%zu\n", config.MIN_WORD_LENGTH);
-  fprintf(stdout, "%zu\n", config.MAX_WORDS_PER_ROW);
-  fprintf(stdout, "%zu\n", config.WORD_COLUMNS_PER_ROW);
   fclose(fp);
+}
+
+Config getConfig(){
+  return config;
 }
 
 int main(){
   readConfig();
+  printConfig();
   return EXIT_SUCCESS;
 }
