@@ -73,18 +73,22 @@ static bool populateConfig(char *line, char **err){
     successfulRead = readVal(line, "%zu", &config.MAX_WORD_LENGTH);
     *err = successfulRead ? NULL : strdup(MAX_WORD_LENGTH);
   }
+
   if(strstr(line, MIN_WORD_LENGTH) != NULL){
     successfulRead = readVal(line, "%zu", &config.MIN_WORD_LENGTH);
     *err = successfulRead ? NULL : strdup(MIN_WORD_LENGTH);
   }
+
   if(strstr(line, MAX_WORDS_PER_ROW) != NULL){
     successfulRead = readVal(line, "%zu", &config.MAX_WORDS_PER_ROW);
     *err = successfulRead ? NULL : strdup(MAX_WORDS_PER_ROW);
   }
+
   if(strstr(line, WORD_COLUMNS_PER_ROW) != NULL){
     successfulRead = readVal(line, "%zu", &config.WORD_COLUMNS_PER_ROW);
     *err = successfulRead ? NULL : strdup(WORD_COLUMNS_PER_ROW);
   }
+
   if(strstr(line, SORT_DESCENDING) != NULL){
     successfulRead = readVal(line, "%s", str);
     if(successfulRead){
@@ -95,6 +99,7 @@ static bool populateConfig(char *line, char **err){
     }
     *err = successfulRead ? NULL : strdup(SORT_DESCENDING);
   }
+
   if(strstr(line, REMOVE_MULTIPLE_COLUMN_DUPLICATES) != NULL){
     successfulRead = readVal(line, "%s", str);
     if(successfulRead){
@@ -105,10 +110,12 @@ static bool populateConfig(char *line, char **err){
     }
     *err = successfulRead ? NULL : strdup(REMOVE_MULTIPLE_COLUMN_DUPLICATES);
   }
+
   if(strstr(line, LEXIS_FILE_NAME) != NULL){
     successfulRead = readVal(line, "%s", &config.LEXIS_FILE_NAME);
     *err = successfulRead ? NULL : strdup(LEXIS_FILE_NAME);
   }
+
   return successfulRead;
 }
 
@@ -146,6 +153,34 @@ static void printConfig(){ //TODO just for testing, remove later
   fprintf(stdout, "LEXIS_FILE_NAME = %s\n", config.LEXIS_FILE_NAME);
 }
 
+static void validateConfig(){
+  if(config.MAX_WORD_LENGTH <= 0 || config.MAX_WORD_LENGTH > 16){
+    fprintf(stderr, "%s must be between 0 and %zu. Defaulting to %zu\n", MAX_WORD_LENGTH, 16, 16);
+    config.MAX_WORD_LENGTH = 16;
+  }
+
+  if(config.MIN_WORD_LENGTH <= 0 || config.MIN_WORD_LENGTH > 16){
+    fprintf(stderr, "%s must be between 0 and %zu. Defaulting to %zu\n", MIN_WORD_LENGTH, 16, 2);
+    config.MIN_WORD_LENGTH = 2;
+  }
+
+  if(config.MIN_WORD_LENGTH >= config.MAX_WORD_LENGTH){
+    fprintf(stderr, "%s cannot be greater than %s. Defaulting to %zu\n", MIN_WORD_LENGTH, MAX_WORD_LENGTH, 2);
+    config.MIN_WORD_LENGTH = 2;
+  }
+
+  if(config.MAX_WORDS_PER_ROW <= 0){
+    fprintf(stderr, "%s cannot be less than %d. Defaulting to %zu\n", MAX_WORDS_PER_ROW, MAX_WORD_LENGTH, 10);
+    config.MAX_WORDS_PER_ROW = 10;
+  }
+
+  if(config.WORD_COLUMNS_PER_ROW <= 0 || config.WORD_COLUMNS_PER_ROW > 16){
+    fprintf(stderr, "%s must be between 0 and %zu. Defaulting to %zu\n", WORD_COLUMNS_PER_ROW, 16, 16);
+    config.WORD_COLUMNS_PER_ROW = 16;
+  }
+  fprintf(stdout, "\n");
+}
+
 void readConfig(){
   FILE *fp = fopen(FILENAME, "r");
   char line[LINE_BUFFER] = {'\0'};
@@ -175,6 +210,8 @@ void readConfig(){
     }
   }
   fclose(fp);
+
+  validateConfig();
 }
 
 Config getConfig(){
