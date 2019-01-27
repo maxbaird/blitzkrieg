@@ -53,7 +53,7 @@ static bool inputValid(char *input){
     input[i] = tolower(input[i]);
 
     if(!isalpha(input[i])){
-      fprintf(stderr, "invalid character '%c'. Only letters allowed.\n", input[i]);
+      fprintf(stderr, "Invalid character '%c'. Only letters allowed.\n", input[i]);
       consumeNewline();
       return false;
     }

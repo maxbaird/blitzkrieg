@@ -25,8 +25,10 @@
 
 #define WORDS_PER_ROW 10
 
-static size_t padding(size_t len){
-  return (MAX_WORD_LEN - len) + 2;
+static size_t LEN_LONGEST_WORD;
+
+static size_t pad(size_t len){
+  return (LEN_LONGEST_WORD - len) + 2;
 }
 
 static void printColumnHeaders(size_t start, size_t end){
@@ -35,7 +37,7 @@ static void printColumnHeaders(size_t start, size_t end){
 
   for(i = start; i < end; i++){
     sprintf(str, "[%zu]", i+1);
-    fprintf(stdout, BOLDCYAN"[%zu]%*s"RESET, i+1, (int)padding(strlen(str)),"");
+    fprintf(stdout, BOLDCYAN"[%zu]%*s"RESET, i+1, (int)pad(strlen(str)),"");
     memset(str, 0, sizeof str);
   }
   fprintf(stdout, "\n");
@@ -69,6 +71,22 @@ static void sortColumns(size_t boardSize, WordColumn *wc){
   }
 }
 
+static void strlenLongestWord(WordColumn *wc, size_t boardSize){
+  size_t i = 0;
+  size_t j = 0;
+  size_t len = 0;
+
+  for(i = 0; i < boardSize; i++){
+    for(j = 0; j < wc->wordCount; j++){
+      if(wc->words[j].len > len){
+        len = wc->words[j].len;
+      }
+    }
+    wc++; //Next column of words
+  }
+  LEN_LONGEST_WORD = len;
+}
+
 void printWords(Board *board, WordColumn *wc, size_t colsPerLine){
   size_t i = 0;
   size_t j = 0;
@@ -79,6 +97,7 @@ void printWords(Board *board, WordColumn *wc, size_t colsPerLine){
   size_t colHeaderStart = 0;
   size_t colHeaderEnd = colHeaderStart + colsPerLine;
 
+  strlenLongestWord(wc, boardSize);//Update longest word
   sortColumns(boardSize, wc); //Print longest words first
 
   for(i = 0; i < boardSize; i+=colsPerLine){
@@ -102,9 +121,9 @@ void printWords(Board *board, WordColumn *wc, size_t colsPerLine){
       for(k = colHeaderStart; k < colHeaderEnd; k++){
         if(wc[k].wordCount > j){
           size_t len = strlen(wc[k].words[j].word);
-          fprintf(stdout, "%s%*s", wc[k].words[j].word, (k==(colHeaderEnd)-1) ? 0: (int)padding(len),"");
+          fprintf(stdout, "%s%*s", wc[k].words[j].word, (k==(colHeaderEnd)-1) ? 0: (int)pad(len),"");
         }else{//If the current column has no more words, print nothing
-          fprintf(stdout, "%*s", (int)padding(0),"");
+          fprintf(stdout, "%*s", (int)pad(0),"");
         }
       }
       fprintf(stdout, "\n"); //Move to new line to print another row of words
