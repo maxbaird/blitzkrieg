@@ -6,7 +6,9 @@
 #include "finder.h"
 #include "board.h"
 #include "lexis.h"
+#include "config.h"
 
+static Config config;
 static Board *BOARD;
 static bool INITIALIZED;
 static size_t BOARD_SIZE;
@@ -41,8 +43,8 @@ static bool canMove(Tile *t, Path *tilePath){
   return true;
 }
 
-static void traverse(Tile *t, char *letters, Path *path, int depth){
-  char *str = calloc(MAX_WORD_LEN+1, sizeof(char)); //Allocate one extra for \0
+static void traverse(Tile *t, char *letters, Path *path, size_t depth){
+  char *str = calloc(config.MAX_WORD_LENGTH+1, sizeof(char)); //Allocate one extra for \0
   Path *tilePath = malloc(sizeof(Path));
   tilePath->traversePath = malloc(BOARD_SIZE * sizeof(int));
 
@@ -78,7 +80,7 @@ static void traverse(Tile *t, char *letters, Path *path, int depth){
     addWord(str, tilePath->root);
   }
 
-  if(depth < MAX_WORD_LEN){ //Avoids finding all 16 combinations
+  if(depth < config.MAX_WORD_LENGTH){
     if(canMove(t->N, tilePath)){traverse(t->N, str, tilePath, depth+1);}
     if(canMove(t->S, tilePath)){traverse(t->S, str, tilePath, depth+1);}
     if(canMove(t->E, tilePath)){traverse(t->E, str, tilePath, depth+1);}
@@ -101,6 +103,7 @@ static void *threadTraverse(void *info){
 }
 
 void initFinder(Board *board){
+  config = getConfig();
   BOARD = board;
   BOARD_SIZE = getBoardSize(board);
   loadLexis();

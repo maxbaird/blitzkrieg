@@ -4,6 +4,7 @@
 #include "print.h"
 #include "board.h"
 #include "blitzkrieg.h"
+#include "config.h"
 
 #define RESET       "\033[0m"              /* Reset to default */
 #define BLACK       "\033[30m"             /* Black */
@@ -23,8 +24,7 @@
 #define BOLDCYAN    "\033[1m\033[36m"      /* Bold Cyan */
 #define BOLDWHITE   "\033[1m\033[37m"      /* Bold White */
 
-#define WORDS_PER_ROW 10
-
+static Config config;
 static size_t LEN_LONGEST_WORD;
 
 static size_t pad(size_t len){
@@ -85,6 +85,7 @@ static void strlenLongestWord(WordColumn *wc, size_t boardSize){
 }
 
 void printWords(Board *board, WordColumn *wc, size_t colsPerLine){
+  config = getConfig();
   size_t i = 0;
   size_t j = 0;
   size_t k = 0;
@@ -106,7 +107,7 @@ void printWords(Board *board, WordColumn *wc, size_t colsPerLine){
     numPrintedRows = 0;
 
     for(j = 0; j < longestColumn; j++){
-      if(numPrintedRows == WORDS_PER_ROW){ //Reprint column headers if necessary
+      if(numPrintedRows == config.MAX_WORDS_PER_ROW){ //Reprint column headers if necessary
         numPrintedRows = 0;
         fprintf(stdout, "\n"); //Go to new line before reprinting column headers
         printColumnHeaders(colHeaderStart, colHeaderEnd);

@@ -1,11 +1,11 @@
 #ifndef __BLITZKRIEG_H__
 #define __BLITZKRIEG_H__
 
-#include "lexis.h"
+#include "config.h"
 
 typedef struct word{
   size_t len;
-  char word[MAX_WORD_LEN+1];
+  char *word;
 }Word;
 
 typedef struct wordColumn{

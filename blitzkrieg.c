@@ -11,6 +11,7 @@
 #include "lexis.h"
 #include "finder.h"
 #include "print.h"
+#include "config.h"
 
 #define HEIGHT 4
 #define WIDTH 4
@@ -23,6 +24,7 @@
 
 #define DEFAULT_BUFFER_SIZE 32
 
+static Config config;
 static WordColumn *WORD_COLUMNS;
 static int WORD_COLUMNS_PER_LINE;
 
@@ -89,9 +91,13 @@ static void reset(Board *board){
 static void freeWordColumns(Board *board){
   WordColumn *wc = WORD_COLUMNS;
   size_t i = 0;
+  size_t j = 0;
   size_t boardSize = getBoardSize(board);
 
   for(i = 0; i < boardSize; i++){
+   for(j = 0; j < wc->wordCount; j++){
+    free(wc->words[j].word);
+   }
    free(wc->words);
    wc++; //Move to next word column
   }
@@ -145,7 +151,7 @@ static void handleArgs(int argc, char *argv[]){
 	size_t columns = 0;
   bool correct = true;
 
-  WORD_COLUMNS_PER_LINE = DEFAULT_COLUMNS_PER_LINE;
+  WORD_COLUMNS_PER_LINE = config.WORD_COLUMNS_PER_ROW;
 
 	if(argc < 2){
     return;
@@ -167,14 +173,16 @@ static void handleArgs(int argc, char *argv[]){
   }
 
   if(!correct){
-    fprintf(stderr, "Defaulting to %d word columns per line\n", DEFAULT_COLUMNS_PER_LINE);
+    fprintf(stderr, "Defaulting to %zu word columns per line\n", config.WORD_COLUMNS_PER_ROW);
   }
 }
 
 static void init(Tile **tiles, Board **board, int argc, char *argv[]){
+  config = getConfig();
   *tiles = makeTiles(HEIGHT * WIDTH);
   *board = makeBoard(*tiles, HEIGHT, WIDTH);
   size_t i = 0;
+  size_t j = 0;
   size_t boardSize = getBoardSize(*board);
 
 	handleArgs(argc, argv);
@@ -199,6 +207,16 @@ static void init(Tile **tiles, Board **board, int argc, char *argv[]){
       fprintf(stderr, "Failed to allocate memory for word\n");
       exit(EXIT_FAILURE);
     }
+
+    for(j = 0; j < DEFAULT_BUFFER_SIZE; j++){ //Allocate space for each word
+      wc->words[j].word = calloc(config.MAX_WORD_LENGTH+1, sizeof(char));
+
+      if(wc->words[j].word == NULL){
+        fprintf(stderr, "Failed to allocate memory for words\n");
+        exit(EXIT_FAILURE);
+      }
+    }
+
     wc++; //Move to next word column
   }
 }
@@ -217,6 +235,7 @@ static bool wordExists(char *str, WordColumn *wc){
 void addWord(char *str, int rootTileIdx){
   WordColumn *wc = &WORD_COLUMNS[rootTileIdx];
 
+  size_t i = 0;
   if(wordExists(str, wc)){ //Avoid adding duplicates
     return;
   }
@@ -229,11 +248,19 @@ void addWord(char *str, int rootTileIdx){
       fprintf(stderr, "Failed to create more space for words!\n");
       exit(EXIT_FAILURE);
     }
+
+    for(i = (wc->buffSize - DEFAULT_BUFFER_SIZE); i < wc->buffSize; i++){
+      wc->words[i].word = calloc(config.MAX_WORD_LENGTH+1, sizeof(char));
+      if(wc->words[i].word == NULL){
+        fprintf(stdout, "Failed to allocate more memory for words\n");
+        exit(EXIT_FAILURE);
+      }
+    }
   }
 
   size_t len = strlen(str);
 
-  if(len < 2){ //Ignore one letter words
+  if(len < config.MIN_WORD_LENGTH){
     return;
   }
 
@@ -253,6 +280,8 @@ void addWord(char *str, int rootTileIdx){
 void blitzkrieg(int argc, char *argv[]){
   Tile *tiles = NULL;
   Board *board = NULL;
+  loadConfig();
+  config = getConfig();
   init(&tiles, &board, argc, argv);
   initFinder(board);
 

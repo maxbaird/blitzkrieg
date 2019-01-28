@@ -3,8 +3,6 @@
 
 #include <stdbool.h>
 
-#define PATH_AMT 8
-
 typedef struct coordinate{
   unsigned int x;
   unsigned int y;

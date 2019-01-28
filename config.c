@@ -26,8 +26,7 @@ static Config config = {DEFAULT_MAX_WORD_LENGTH,
                         DEFAULT_WORD_COLUMNS_PER_ROW,
                         DEFAULT_SORT_DESCENDING,
                         DEFAULT_REMOVE_MULTIPLE_COLUMN_DUPLICATES,
-                        DEFAULT_LEXIS_FILE_NAME
-                        };
+                        DEFAULT_LEXIS_FILE_NAME};
 
 static const char* MAX_WORD_LENGTH = "MAX_WORD_LENGTH";
 static const char* MIN_WORD_LENGTH = "MIN_WORD_LENGTH";
@@ -183,15 +182,15 @@ static void restoreDefaultConfig(const char* value){
   }
 }
 
-static void printConfig(){ //TODO just for testing, remove later
-  fprintf(stdout, "MAX_WORD_LENGTH = %zu\n", config.MAX_WORD_LENGTH);
-  fprintf(stdout, "MIN_WORD_LENGTH = %zu\n", config.MIN_WORD_LENGTH);
-  fprintf(stdout, "MAX_WORDS_PER_ROW = %zu\n", config.MAX_WORDS_PER_ROW);
-  fprintf(stdout, "WORD_COLUMNS_PER_ROW = %zu\n", config.WORD_COLUMNS_PER_ROW);
-  fprintf(stdout, "SORT_DESCENDING = %s\n", config.SORT_DESCENDING?"True":"False");
-  fprintf(stdout, "REMOVE_MULTIPLE_COLUMN_DUPLICATES = %s\n", config.REMOVE_MULTIPLE_COLUMN_DUPLICATES?"True":"False");
-  fprintf(stdout, "LEXIS_FILE_NAME = %s\n", config.LEXIS_FILE_NAME);
-}
+//static void printConfig(){ //TODO just for testing, remove later
+//  fprintf(stdout, "MAX_WORD_LENGTH = %zu\n", config.MAX_WORD_LENGTH);
+//  fprintf(stdout, "MIN_WORD_LENGTH = %zu\n", config.MIN_WORD_LENGTH);
+//  fprintf(stdout, "MAX_WORDS_PER_ROW = %zu\n", config.MAX_WORDS_PER_ROW);
+//  fprintf(stdout, "WORD_COLUMNS_PER_ROW = %zu\n", config.WORD_COLUMNS_PER_ROW);
+//  fprintf(stdout, "SORT_DESCENDING = %s\n", config.SORT_DESCENDING?"True":"False");
+//  fprintf(stdout, "REMOVE_MULTIPLE_COLUMN_DUPLICATES = %s\n", config.REMOVE_MULTIPLE_COLUMN_DUPLICATES?"True":"False");
+//  fprintf(stdout, "LEXIS_FILE_NAME = %s\n", config.LEXIS_FILE_NAME);
+//}
 
 static void validateConfig(){
   if(config.MAX_WORD_LENGTH <= 0 || config.MAX_WORD_LENGTH > LONGEST_WORD_LENGTH){
@@ -240,7 +239,7 @@ static void validateConfig(){
   fprintf(stdout, "\n");
 }
 
-void readConfig(){
+void loadConfig(){
   FILE *fp = fopen(FILENAME, "r");
   char line[LINE_BUFFER] = {'\0'};
   bool success = true;
@@ -255,7 +254,7 @@ void readConfig(){
   while(fgets(line, LINE_BUFFER, fp) != NULL){
     sanitizeLine(line);
 
-    if(line[0] == '#' || line[0] == '\n' || strlen(line) == 0){ //Ignore commented and empty lines
+    if(line[0] == '#' || line[0] == '\n'){ //Ignore commented and empty lines
       continue;
     }
 
@@ -263,7 +262,6 @@ void readConfig(){
 
     if(!success){
       fprintf(stderr, "Error reading \"%s\" value. Default configuration value will be used.\n", readErr);
-      fflush(stderr);
       restoreDefaultConfig(readErr);
       free(readErr);
     }
@@ -275,10 +273,4 @@ void readConfig(){
 
 Config getConfig(){
   return config;
-}
-
-int main(){
-  readConfig();
-  printConfig();
-  return EXIT_SUCCESS;
 }
