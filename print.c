@@ -24,11 +24,13 @@
 #define BOLDCYAN    "\033[1m\033[36m"      /* Bold Cyan */
 #define BOLDWHITE   "\033[1m\033[37m"      /* Bold White */
 
+#define SPACE_BETWEEN_COLUMNS 2 //Space between word columns
+
 static Config config;
 static size_t LEN_LONGEST_WORD;
 
 static size_t pad(size_t len){
-  return (LEN_LONGEST_WORD - len) + 2;
+  return (LEN_LONGEST_WORD - len) + SPACE_BETWEEN_COLUMNS;
 }
 
 static void printColumnHeaders(size_t start, size_t end){
@@ -135,4 +137,10 @@ void printWords(Board *board, WordColumn *wc){
     colHeaderEnd = colHeaderStart + config.WORD_COLUMNS_PER_ROW; //Move end column up also
     colHeaderEnd = colHeaderEnd >= boardSize ? boardSize : colHeaderEnd; //Keep the end to the size of the board
   }
+
+  for(i = 0; i < (LEN_LONGEST_WORD + SPACE_BETWEEN_COLUMNS) * config.WORD_COLUMNS_PER_ROW; i++){
+    fprintf(stdout, "+");
+  }
+
+  fprintf(stdout, "\n\n");
 }

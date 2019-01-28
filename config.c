@@ -43,6 +43,7 @@ typedef struct configFound{
 }ConfigFound;
 
 static ConfigFound configFound = {false, false, false, false, false, false};
+static bool configurationLoaded = false;
 
 /*
  * Taken from: https://android.googlesource.com/platform/bionic/+/fe6338d/libc/string/strcasestr.c
@@ -294,8 +295,14 @@ void loadConfig(){
 
   checkAllConfigsFound();
   validateConfig();
+  configurationLoaded = true;
 }
 
 Config getConfig(){
+  if(!configurationLoaded){
+    fprintf(stderr, "Configuration not loaded!\n");
+    exit(EXIT_FAILURE);
+  }
+
   return config;
 }
