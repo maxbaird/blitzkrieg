@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#define FILE_NAME_LENGTH 64
+#define PATH_LENGTH 64
 
 typedef struct config{
   size_t MAX_WORD_LENGTH;
@@ -12,7 +12,7 @@ typedef struct config{
   size_t WORD_COLUMNS_PER_ROW;
   bool SORT_DESCENDING;
   bool REMOVE_MULTIPLE_COLUMN_DUPLICATES;
-  char LEXIS_FILE_NAME[FILE_NAME_LENGTH];
+  char LEXIS_FILE_PATH[PATH_LENGTH];
 }Config;
 
 void loadConfig();

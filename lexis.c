@@ -5,7 +5,6 @@
 #include "avltree.h"
 #include "config.h"
 
-#define LEXIS_PATH "lexis"
 #define BUFFER_SIZE 1024
 
 static AvlTree lexisTree;
@@ -18,10 +17,10 @@ void loadLexis(){
   char *tmp = NULL;
   size_t len = 0;
 
-  fp = fopen(LEXIS_PATH, "r");
+  fp = fopen(config.LEXIS_FILE_PATH, "r");
 
   if(fp == NULL){
-    fprintf(stderr, "Failed to open lexis file \"%s\"\n", LEXIS_PATH);
+    fprintf(stderr, "Failed to open lexis file \"%s\"\n", config.LEXIS_FILE_PATH);
     exit(EXIT_FAILURE);
   }
 
