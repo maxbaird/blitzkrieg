@@ -37,13 +37,34 @@ static const char* SORT_DESCENDING = "SORT_DESCENDING";
 static const char* REMOVE_MULTIPLE_COLUMN_DUPLICATES = "REMOVE_MULTIPLE_COLUMN_DUPLICATES";
 static const char* LEXIS_FILE_NAME = "LEXIS_FILE_NAME";
 
+/*
+ * Taken from: https://android.googlesource.com/platform/bionic/+/fe6338d/libc/string/strcasestr.c
+ * Find the first occurrence of find in s, ignore case.
+ */
+char *strcasestr(const char *s, const char *find)
+{
+  char c, sc;
+  size_t len;
+  if ((c = *find++) != 0) {
+    c = (char)tolower((unsigned char)c);
+    len = strlen(find);
+    do {
+      do {
+        if ((sc = *s++) == 0)
+          return (NULL);
+      } while ((char)tolower((unsigned char)sc) != c);
+    } while (strncasecmp(s, find, len) != 0);
+    s--;
+  }
+  return ((char *)s);
+}
+
 static void sanitizeLine(char *str){
   char* i = str;
   char* j = str;
 
   while(*j != 0){
     *i = *j++;
-    *i = toupper(*i);
     if(!isspace(*i)){
       i++;
     }
@@ -88,27 +109,27 @@ static bool populateConfig(char *line, char **err){
   int ret = 0;
   bool successfulRead = true;
 
-  if(strstr(line, MAX_WORD_LENGTH) != NULL){
+  if(strcasestr(line, MAX_WORD_LENGTH) != NULL){
     successfulRead = readVal(line, "%zu", &config.MAX_WORD_LENGTH);
     *err = successfulRead ? NULL : strdup(MAX_WORD_LENGTH);
   }
 
-  if(strstr(line, MIN_WORD_LENGTH) != NULL){
+  if(strcasestr(line, MIN_WORD_LENGTH) != NULL){
     successfulRead = readVal(line, "%zu", &config.MIN_WORD_LENGTH);
     *err = successfulRead ? NULL : strdup(MIN_WORD_LENGTH);
   }
 
-  if(strstr(line, MAX_WORDS_PER_ROW) != NULL){
+  if(strcasestr(line, MAX_WORDS_PER_ROW) != NULL){
     successfulRead = readVal(line, "%zu", &config.MAX_WORDS_PER_ROW);
     *err = successfulRead ? NULL : strdup(MAX_WORDS_PER_ROW);
   }
 
-  if(strstr(line, WORD_COLUMNS_PER_ROW) != NULL){
+  if(strcasestr(line, WORD_COLUMNS_PER_ROW) != NULL){
     successfulRead = readVal(line, "%zu", &config.WORD_COLUMNS_PER_ROW);
     *err = successfulRead ? NULL : strdup(WORD_COLUMNS_PER_ROW);
   }
 
-  if(strstr(line, SORT_DESCENDING) != NULL){
+  if(strcasestr(line, SORT_DESCENDING) != NULL){
     successfulRead = readVal(line, "%s", str);
     if(successfulRead){
       ret = getBoolean(str, &config.SORT_DESCENDING);
@@ -119,7 +140,7 @@ static bool populateConfig(char *line, char **err){
     *err = successfulRead ? NULL : strdup(SORT_DESCENDING);
   }
 
-  if(strstr(line, REMOVE_MULTIPLE_COLUMN_DUPLICATES) != NULL){
+  if(strcasestr(line, REMOVE_MULTIPLE_COLUMN_DUPLICATES) != NULL){
     successfulRead = readVal(line, "%s", str);
     if(successfulRead){
       ret = getBoolean(str, &config.REMOVE_MULTIPLE_COLUMN_DUPLICATES);
@@ -130,7 +151,7 @@ static bool populateConfig(char *line, char **err){
     *err = successfulRead ? NULL : strdup(REMOVE_MULTIPLE_COLUMN_DUPLICATES);
   }
 
-  if(strstr(line, LEXIS_FILE_NAME) != NULL){
+  if(strcasestr(line, LEXIS_FILE_NAME) != NULL){
     successfulRead = readVal(line, "%s", &config.LEXIS_FILE_NAME);
     *err = successfulRead ? NULL : strdup(LEXIS_FILE_NAME);
   }
@@ -174,7 +195,7 @@ static void printConfig(){ //TODO just for testing, remove later
 
 static void validateConfig(){
   if(config.MAX_WORD_LENGTH <= 0 || config.MAX_WORD_LENGTH > LONGEST_WORD_LENGTH){
-    fprintf(stderr, "%s must be between 0 and %zu. Defaulting to %zu.\n",
+    fprintf(stderr, "%s must be between 0 and %d. Defaulting to %d.\n",
         MAX_WORD_LENGTH,
         LONGEST_WORD_LENGTH,
         DEFAULT_MAX_WORD_LENGTH);
@@ -183,7 +204,7 @@ static void validateConfig(){
   }
 
   if(config.MIN_WORD_LENGTH <= 0 || config.MIN_WORD_LENGTH >= LONGEST_WORD_LENGTH){
-    fprintf(stderr, "%s must be between 0 and %zu. Defaulting to %zu.\n",
+    fprintf(stderr, "%s must be between 0 and %d. Defaulting to %d.\n",
         MIN_WORD_LENGTH,
         LONGEST_WORD_LENGTH,
         DEFAULT_MIN_WORD_LENGTH);
@@ -192,7 +213,7 @@ static void validateConfig(){
   }
 
   if(config.MIN_WORD_LENGTH >= config.MAX_WORD_LENGTH){
-    fprintf(stderr, "%s must be less than %s. Defaulting to %zu.\n",
+    fprintf(stderr, "%s must be less than %s. Defaulting to %d.\n",
         MIN_WORD_LENGTH,
         MAX_WORD_LENGTH,
         DEFAULT_MIN_WORD_LENGTH);
@@ -201,7 +222,7 @@ static void validateConfig(){
   }
 
   if(config.MAX_WORDS_PER_ROW <= 0){
-    fprintf(stderr, "%s cannot be less than 0. Defaulting to %zu.\n",
+    fprintf(stderr, "%s cannot be less than 0. Defaulting to %d.\n",
         MAX_WORDS_PER_ROW,
         DEFAULT_MAX_WORDS_PER_ROW);
 
@@ -209,7 +230,7 @@ static void validateConfig(){
   }
 
   if(config.WORD_COLUMNS_PER_ROW <= 0 || config.WORD_COLUMNS_PER_ROW > MAX_WORD_COLUMNS_PER_ROW){
-    fprintf(stderr, "%s must be between 0 and %zu. Defaulting to %zu.\n",
+    fprintf(stderr, "%s must be between 0 and %d. Defaulting to %d.\n",
         WORD_COLUMNS_PER_ROW,
         MAX_WORD_COLUMNS_PER_ROW,
         DEFAULT_WORD_COLUMNS_PER_ROW);
