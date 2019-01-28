@@ -69,11 +69,19 @@ static bool inputValid(char *input){
 static void reset(Board *board){
   WordColumn *wc = WORD_COLUMNS;
   size_t i = 0;
+  size_t j = 0;
   size_t boardSize = getBoardSize(board);
 
   for(i = 0; i < boardSize; i++){
     wc->tileIndex = 0;
+
+    for(j = DEFAULT_BUFFER_SIZE; j < wc->buffSize; j++){
+      //Free allocations beyond the default buffer size
+      free(wc->words[j].word);
+    }
+
     wc->buffSize = DEFAULT_BUFFER_SIZE;
+
     wc->words = realloc(wc->words, DEFAULT_BUFFER_SIZE * sizeof(Word));
     wc->wordCount = 0;
 
@@ -81,7 +89,6 @@ static void reset(Board *board){
       fprintf(stderr, "Out of memory resetting word memory\n");
       exit(EXIT_FAILURE);
     }
-    memset(wc->words, 0, DEFAULT_BUFFER_SIZE * sizeof(Word));
 
     wc++; //Go to next column of words
   }
@@ -94,7 +101,7 @@ static void freeWordColumns(Board *board){
   size_t boardSize = getBoardSize(board);
 
   for(i = 0; i < boardSize; i++){
-   for(j = 0; j < wc->wordCount; j++){
+   for(j = 0; j < wc->buffSize; j++){
     free(wc->words[j].word);
    }
    free(wc->words);
@@ -206,7 +213,9 @@ void addWord(char *str, int rootTileIdx){
     return;
   }
 
-  if(wc->wordCount >= (wc->buffSize-1)){
+  if(wc->wordCount == wc->buffSize){
+    fprintf(stdout, "Reallocing\n");
+
     wc->buffSize  += DEFAULT_BUFFER_SIZE;
     wc->words = realloc(wc->words, wc->buffSize * sizeof(Word));
 
