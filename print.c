@@ -59,7 +59,10 @@ static int compareWords(const void *w1, const void *w2){
   Word *word1 = (Word *)w1;
   Word *word2 = (Word *)w2;
 
-  return (int)word2->len - (int)word1->len;
+  if(config.SORT_DESCENDING){
+    return (int)word2->len - (int)word1->len;
+  }
+  return (int)word1->len - (int)word2->len;
 }
 
 static void sortColumns(size_t boardSize, WordColumn *wc){
@@ -84,7 +87,7 @@ static void strlenLongestWord(WordColumn *wc, size_t boardSize){
   LEN_LONGEST_WORD = len;
 }
 
-void printWords(Board *board, WordColumn *wc, size_t colsPerLine){
+void printWords(Board *board, WordColumn *wc){
   config = getConfig();
   size_t i = 0;
   size_t j = 0;
@@ -93,12 +96,12 @@ void printWords(Board *board, WordColumn *wc, size_t colsPerLine){
   size_t longestColumn = 0;
   size_t boardSize = getBoardSize(board);
   size_t colHeaderStart = 0;
-  size_t colHeaderEnd = colHeaderStart + colsPerLine;
+  size_t colHeaderEnd = colHeaderStart + config.WORD_COLUMNS_PER_ROW;
 
   strlenLongestWord(wc, boardSize);//Update longest word
   sortColumns(boardSize, wc); //Print longest words first
 
-  for(i = 0; i < boardSize; i+=colsPerLine){
+  for(i = 0; i < boardSize; i+=config.WORD_COLUMNS_PER_ROW){
     printColumnHeaders(colHeaderStart, colHeaderEnd);
 
     //This is later used as a loop control to ensure that
@@ -128,8 +131,8 @@ void printWords(Board *board, WordColumn *wc, size_t colsPerLine){
     }
     fprintf(stdout, "\n"); //Force remaining of columns onto new line
 
-    colHeaderStart += colsPerLine; //More start column up by number of columns to print per line
-    colHeaderEnd = colHeaderStart + colsPerLine; //Move end column up also
+    colHeaderStart += config.WORD_COLUMNS_PER_ROW; //More start column up by number of columns to print per line
+    colHeaderEnd = colHeaderStart + config.WORD_COLUMNS_PER_ROW; //Move end column up also
     colHeaderEnd = colHeaderEnd >= boardSize ? boardSize : colHeaderEnd; //Keep the end to the size of the board
   }
 }

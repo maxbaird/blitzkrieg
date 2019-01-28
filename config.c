@@ -92,11 +92,19 @@ static bool readVal(char *line, char *format, void *val){
   return true;
 }
 
+static void convertToLower(char *s){
+  for(;*s;++s){
+    *s = tolower(*s);
+  }
+}
+
 static int getBoolean(char *str, bool *b){
-  if(strcmp(str, "TRUE") == 0){
+  convertToLower(str);
+
+  if(strcmp(str, "true") == 0){
     *b = true;
     return 0;
-  }else if(strcmp(str, "FALSE") == 0){
+  }else if(strcmp(str, "false") == 0){
     *b = false;
     return 0;
   }

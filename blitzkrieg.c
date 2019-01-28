@@ -26,7 +26,6 @@
 
 static Config config;
 static WordColumn *WORD_COLUMNS;
-static int WORD_COLUMNS_PER_LINE;
 
 static void consumeNewline(){
   int c = 0;
@@ -138,7 +137,7 @@ static void start(Board *board){
 
     placeLetters(board, letters);
     findWords();
-    printWords(board, WORD_COLUMNS, WORD_COLUMNS_PER_LINE);
+    printWords(board, WORD_COLUMNS);
     reset(board);
     consumeNewline();
   }
@@ -146,46 +145,13 @@ static void start(Board *board){
   fprintf(stdout, "Bye!\n");
 }
 
-static void handleArgs(int argc, char *argv[]){
-	char *p = NULL;
-	size_t columns = 0;
-  bool correct = true;
-
-  WORD_COLUMNS_PER_LINE = config.WORD_COLUMNS_PER_ROW;
-
-	if(argc < 2){
-    return;
-  }
-
-  columns = strtol(argv[1], &p, 10);
-
-  if (errno != 0) {
-    perror("Error with word columns argument");
-    correct = false;
-  }else if(*p != '\0'){
-    fprintf(stderr, "Error reading columns argument\n");
-    correct = false;
-  }else if(columns > MAX_LETTERS || columns < 1){
-    fprintf(stderr, "Word columns must be between 1 and %d\n", MAX_LETTERS);
-    correct = false;
-  }else{
-    WORD_COLUMNS_PER_LINE = columns;
-  }
-
-  if(!correct){
-    fprintf(stderr, "Defaulting to %zu word columns per line\n", config.WORD_COLUMNS_PER_ROW);
-  }
-}
-
-static void init(Tile **tiles, Board **board, int argc, char *argv[]){
+static void init(Tile **tiles, Board **board){
   config = getConfig();
   *tiles = makeTiles(HEIGHT * WIDTH);
   *board = makeBoard(*tiles, HEIGHT, WIDTH);
   size_t i = 0;
   size_t j = 0;
   size_t boardSize = getBoardSize(*board);
-
-	handleArgs(argc, argv);
 
   WORD_COLUMNS = malloc(boardSize * sizeof(WordColumn));
 
@@ -277,17 +243,15 @@ void addWord(char *str, int rootTileIdx){
   wc->wordCount++;
 }
 
-void blitzkrieg(int argc, char *argv[]){
+void blitzkrieg(){
   Tile *tiles = NULL;
   Board *board = NULL;
   loadConfig();
   config = getConfig();
-  init(&tiles, &board, argc, argv);
+  init(&tiles, &board);
   initFinder(board);
 
   start(board);
-  //placeLetters(board, "itsnuelatkudadls");
-  //findWords();
 
   freeWordColumns(board);
   clearTiles(tiles);

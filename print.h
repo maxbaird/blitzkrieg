@@ -4,6 +4,6 @@
 #include "blitzkrieg.h"
 #include "board.h"
 
-void printWords(Board *board, WordColumn *wc, size_t colsPerLine);
+void printWords(Board *board, WordColumn *wc);
 
 #endif /* __PRINT_H__ */
