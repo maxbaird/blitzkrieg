@@ -8,7 +8,26 @@
 #define FILENAME "config.conf"
 #define LINE_BUFFER 128
 
-static Config config = {9, 2, 10, 16, true, false, "lexis"};
+#define LONGEST_WORD_LENGTH                             16
+#define MAX_WORD_COLUMNS_PER_ROW                        16
+
+/* Defaults */
+#define DEFAULT_MAX_WORD_LENGTH                         9
+#define DEFAULT_MIN_WORD_LENGTH                         2
+#define DEFAULT_MAX_WORDS_PER_ROW                       10
+#define DEFAULT_WORD_COLUMNS_PER_ROW                    16
+#define DEFAULT_SORT_DESCENDING                         true
+#define DEFAULT_REMOVE_MULTIPLE_COLUMN_DUPLICATES       false
+#define DEFAULT_LEXIS_FILE_NAME                         "lexis"
+
+static Config config = {DEFAULT_MAX_WORD_LENGTH,
+                        DEFAULT_MIN_WORD_LENGTH,
+                        DEFAULT_MAX_WORDS_PER_ROW,
+                        DEFAULT_WORD_COLUMNS_PER_ROW,
+                        DEFAULT_SORT_DESCENDING,
+                        DEFAULT_REMOVE_MULTIPLE_COLUMN_DUPLICATES,
+                        DEFAULT_LEXIS_FILE_NAME
+                        };
 
 static const char* MAX_WORD_LENGTH = "MAX_WORD_LENGTH";
 static const char* MIN_WORD_LENGTH = "MIN_WORD_LENGTH";
@@ -121,25 +140,25 @@ static bool populateConfig(char *line, char **err){
 
 static void restoreDefaultConfig(const char* value){
   if(strcmp(value, MAX_WORD_LENGTH) == 0){
-    config.MAX_WORD_LENGTH = 9;
+    config.MAX_WORD_LENGTH = DEFAULT_MAX_WORD_LENGTH;
   }
   if(strcmp(value, MIN_WORD_LENGTH) == 0){
-    config.MIN_WORD_LENGTH = 2;
+    config.MIN_WORD_LENGTH = DEFAULT_MIN_WORD_LENGTH;
   }
   if(strcmp(value, MAX_WORDS_PER_ROW) == 0){
-    config.MAX_WORDS_PER_ROW = 10;
+    config.MAX_WORDS_PER_ROW = DEFAULT_MAX_WORDS_PER_ROW;
   }
   if(strcmp(value, WORD_COLUMNS_PER_ROW) == 0){
-    config.WORD_COLUMNS_PER_ROW = 16;
+    config.WORD_COLUMNS_PER_ROW = DEFAULT_WORD_COLUMNS_PER_ROW;
   }
   if(strcmp(value, SORT_DESCENDING) == 0){
-    config.SORT_DESCENDING = true;
+    config.SORT_DESCENDING = DEFAULT_SORT_DESCENDING;
   }
   if(strcmp(value, REMOVE_MULTIPLE_COLUMN_DUPLICATES) == 0){
-    config.REMOVE_MULTIPLE_COLUMN_DUPLICATES = false;
+    config.REMOVE_MULTIPLE_COLUMN_DUPLICATES = DEFAULT_REMOVE_MULTIPLE_COLUMN_DUPLICATES;
   }
   if(strcmp(value, LEXIS_FILE_NAME) == 0){
-    strcpy(config.LEXIS_FILE_NAME, "lexis");
+    strcpy(config.LEXIS_FILE_NAME, DEFAULT_LEXIS_FILE_NAME);
   }
 }
 
@@ -154,29 +173,48 @@ static void printConfig(){ //TODO just for testing, remove later
 }
 
 static void validateConfig(){
-  if(config.MAX_WORD_LENGTH <= 0 || config.MAX_WORD_LENGTH > 16){
-    fprintf(stderr, "%s must be between 0 and %zu. Defaulting to %zu\n", MAX_WORD_LENGTH, 16, 16);
-    config.MAX_WORD_LENGTH = 16;
+  if(config.MAX_WORD_LENGTH <= 0 || config.MAX_WORD_LENGTH > LONGEST_WORD_LENGTH){
+    fprintf(stderr, "%s must be between 0 and %zu. Defaulting to %zu.\n",
+        MAX_WORD_LENGTH,
+        LONGEST_WORD_LENGTH,
+        DEFAULT_MAX_WORD_LENGTH);
+
+    config.MAX_WORD_LENGTH = DEFAULT_MAX_WORD_LENGTH;
   }
 
-  if(config.MIN_WORD_LENGTH <= 0 || config.MIN_WORD_LENGTH > 16){
-    fprintf(stderr, "%s must be between 0 and %zu. Defaulting to %zu\n", MIN_WORD_LENGTH, 16, 2);
-    config.MIN_WORD_LENGTH = 2;
+  if(config.MIN_WORD_LENGTH <= 0 || config.MIN_WORD_LENGTH >= LONGEST_WORD_LENGTH){
+    fprintf(stderr, "%s must be between 0 and %zu. Defaulting to %zu.\n",
+        MIN_WORD_LENGTH,
+        LONGEST_WORD_LENGTH,
+        DEFAULT_MIN_WORD_LENGTH);
+
+    config.MIN_WORD_LENGTH = DEFAULT_MIN_WORD_LENGTH;
   }
 
   if(config.MIN_WORD_LENGTH >= config.MAX_WORD_LENGTH){
-    fprintf(stderr, "%s cannot be greater than %s. Defaulting to %zu\n", MIN_WORD_LENGTH, MAX_WORD_LENGTH, 2);
-    config.MIN_WORD_LENGTH = 2;
+    fprintf(stderr, "%s must be less than %s. Defaulting to %zu.\n",
+        MIN_WORD_LENGTH,
+        MAX_WORD_LENGTH,
+        DEFAULT_MIN_WORD_LENGTH);
+
+    config.MIN_WORD_LENGTH = DEFAULT_MIN_WORD_LENGTH;
   }
 
   if(config.MAX_WORDS_PER_ROW <= 0){
-    fprintf(stderr, "%s cannot be less than %d. Defaulting to %zu\n", MAX_WORDS_PER_ROW, MAX_WORD_LENGTH, 10);
-    config.MAX_WORDS_PER_ROW = 10;
+    fprintf(stderr, "%s cannot be less than 0. Defaulting to %zu.\n",
+        MAX_WORDS_PER_ROW,
+        DEFAULT_MAX_WORDS_PER_ROW);
+
+    config.MAX_WORDS_PER_ROW = DEFAULT_MAX_WORDS_PER_ROW;
   }
 
-  if(config.WORD_COLUMNS_PER_ROW <= 0 || config.WORD_COLUMNS_PER_ROW > 16){
-    fprintf(stderr, "%s must be between 0 and %zu. Defaulting to %zu\n", WORD_COLUMNS_PER_ROW, 16, 16);
-    config.WORD_COLUMNS_PER_ROW = 16;
+  if(config.WORD_COLUMNS_PER_ROW <= 0 || config.WORD_COLUMNS_PER_ROW > MAX_WORD_COLUMNS_PER_ROW){
+    fprintf(stderr, "%s must be between 0 and %zu. Defaulting to %zu.\n",
+        WORD_COLUMNS_PER_ROW,
+        MAX_WORD_COLUMNS_PER_ROW,
+        DEFAULT_WORD_COLUMNS_PER_ROW);
+
+    config.WORD_COLUMNS_PER_ROW = DEFAULT_WORD_COLUMNS_PER_ROW;
   }
   fprintf(stdout, "\n");
 }
@@ -196,7 +234,7 @@ void readConfig(){
   while(fgets(line, LINE_BUFFER, fp) != NULL){
     sanitizeLine(line);
 
-    if(line[0] == '#' || strlen(line) == 0){ //Ignore commented and empty lines
+    if(line[0] == '#' || line[0] == '\n' || strlen(line) == 0){ //Ignore commented and empty lines
       continue;
     }
 
