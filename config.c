@@ -33,6 +33,17 @@ static const char* WORD_COLUMNS_PER_ROW = "WORD_COLUMNS_PER_ROW";
 static const char* SORT_DESCENDING = "SORT_DESCENDING";
 static const char* LEXIS_FILE_PATH = "LEXIS_FILE_PATH";
 
+typedef struct configFound{
+  bool MAX_WORD_LENGTH;
+  bool MIN_WORD_LENGTH;
+  bool MAX_WORDS_PER_ROW;
+  bool WORD_COLUMNS_PER_ROW;
+  bool SORT_DESCENDING;
+  bool LEXIS_FILE_PATH;
+}ConfigFound;
+
+static ConfigFound configFound = {false, false, false, false, false, false};
+
 /*
  * Taken from: https://android.googlesource.com/platform/bionic/+/fe6338d/libc/string/strcasestr.c
  * Find the first occurrence of find in s, ignore case.
@@ -114,26 +125,31 @@ static bool populateConfig(char *line, char **err){
   bool successfulRead = true;
 
   if(strcasestr(line, MAX_WORD_LENGTH) != NULL){
+    configFound.MAX_WORD_LENGTH = true;
     successfulRead = readVal(line, "%zu", &config.MAX_WORD_LENGTH);
     *err = successfulRead ? NULL : strdup(MAX_WORD_LENGTH);
   }
 
   if(strcasestr(line, MIN_WORD_LENGTH) != NULL){
+    configFound.MIN_WORD_LENGTH = true;
     successfulRead = readVal(line, "%zu", &config.MIN_WORD_LENGTH);
     *err = successfulRead ? NULL : strdup(MIN_WORD_LENGTH);
   }
 
   if(strcasestr(line, MAX_WORDS_PER_ROW) != NULL){
+    configFound.MAX_WORDS_PER_ROW = true;
     successfulRead = readVal(line, "%zu", &config.MAX_WORDS_PER_ROW);
     *err = successfulRead ? NULL : strdup(MAX_WORDS_PER_ROW);
   }
 
   if(strcasestr(line, WORD_COLUMNS_PER_ROW) != NULL){
+    configFound.WORD_COLUMNS_PER_ROW = true;
     successfulRead = readVal(line, "%zu", &config.WORD_COLUMNS_PER_ROW);
     *err = successfulRead ? NULL : strdup(WORD_COLUMNS_PER_ROW);
   }
 
   if(strcasestr(line, SORT_DESCENDING) != NULL){
+    configFound.SORT_DESCENDING = true;
     successfulRead = readVal(line, "%s", str);
     if(successfulRead){
       ret = getBoolean(str, &config.SORT_DESCENDING);
@@ -145,6 +161,7 @@ static bool populateConfig(char *line, char **err){
   }
 
   if(strcasestr(line, LEXIS_FILE_PATH) != NULL){
+    configFound.LEXIS_FILE_PATH = true;
     successfulRead = readVal(line, "%s", &config.LEXIS_FILE_PATH);
     *err = successfulRead ? NULL : strdup(LEXIS_FILE_PATH);
   }
@@ -220,6 +237,32 @@ static void validateConfig(){
   fprintf(stdout, "\n");
 }
 
+static void checkAllConfigsFound(){
+  if(!configFound.MAX_WORD_LENGTH){
+    fprintf(stderr, "%s not found; defaulting to %d\n", MAX_WORD_LENGTH, DEFAULT_MAX_WORD_LENGTH);
+  }
+
+  if(!configFound.MIN_WORD_LENGTH){
+    fprintf(stderr, "%s not found; defaulting to %d\n", MIN_WORD_LENGTH, DEFAULT_MIN_WORD_LENGTH);
+  }
+
+  if(!configFound.MAX_WORDS_PER_ROW){
+    fprintf(stderr, "%s not found; defaulting to %d\n", MAX_WORDS_PER_ROW, DEFAULT_MAX_WORDS_PER_ROW);
+  }
+
+  if(!configFound.WORD_COLUMNS_PER_ROW){
+    fprintf(stderr, "%s not found; defaulting to %d\n", WORD_COLUMNS_PER_ROW, DEFAULT_WORD_COLUMNS_PER_ROW);
+  }
+
+  if(!configFound.SORT_DESCENDING){
+    fprintf(stderr, "%s not found; defaulting to %s\n", SORT_DESCENDING, DEFAULT_SORT_DESCENDING ? "True" : "False");
+  }
+
+  if(!configFound.LEXIS_FILE_PATH){
+    fprintf(stderr, "%s not found; defaulting to \"%s\"\n", LEXIS_FILE_PATH, DEFAULT_LEXIS_FILE_PATH);
+  }
+}
+
 void loadConfig(){
   FILE *fp = fopen(FILENAME, "r");
   char line[LINE_BUFFER] = {'\0'};
@@ -249,6 +292,7 @@ void loadConfig(){
   }
   fclose(fp);
 
+  checkAllConfigsFound();
   validateConfig();
 }
 
