@@ -214,8 +214,6 @@ void addWord(char *str, int rootTileIdx){
   }
 
   if(wc->wordCount == wc->buffSize){
-    fprintf(stdout, "Reallocing\n");
-
     wc->buffSize  += DEFAULT_BUFFER_SIZE;
     wc->words = realloc(wc->words, wc->buffSize * sizeof(Word));
 

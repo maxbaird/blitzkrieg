@@ -17,7 +17,6 @@
 #define DEFAULT_MAX_WORDS_PER_ROW                       10
 #define DEFAULT_WORD_COLUMNS_PER_ROW                    16
 #define DEFAULT_SORT_DESCENDING                         true
-#define DEFAULT_REMOVE_MULTIPLE_COLUMN_DUPLICATES       false
 #define DEFAULT_LEXIS_FILE_PATH                         "lexis"
 
 static Config config = {DEFAULT_MAX_WORD_LENGTH,
@@ -25,7 +24,6 @@ static Config config = {DEFAULT_MAX_WORD_LENGTH,
                         DEFAULT_MAX_WORDS_PER_ROW,
                         DEFAULT_WORD_COLUMNS_PER_ROW,
                         DEFAULT_SORT_DESCENDING,
-                        DEFAULT_REMOVE_MULTIPLE_COLUMN_DUPLICATES,
                         DEFAULT_LEXIS_FILE_PATH};
 
 static const char* MAX_WORD_LENGTH = "MAX_WORD_LENGTH";
@@ -33,7 +31,6 @@ static const char* MIN_WORD_LENGTH = "MIN_WORD_LENGTH";
 static const char* MAX_WORDS_PER_ROW = "MAX_WORDS_PER_ROW";
 static const char* WORD_COLUMNS_PER_ROW = "WORD_COLUMNS_PER_ROW";
 static const char* SORT_DESCENDING = "SORT_DESCENDING";
-static const char* REMOVE_MULTIPLE_COLUMN_DUPLICATES = "REMOVE_MULTIPLE_COLUMN_DUPLICATES";
 static const char* LEXIS_FILE_PATH = "LEXIS_FILE_PATH";
 
 /*
@@ -147,17 +144,6 @@ static bool populateConfig(char *line, char **err){
     *err = successfulRead ? NULL : strdup(SORT_DESCENDING);
   }
 
-  if(strcasestr(line, REMOVE_MULTIPLE_COLUMN_DUPLICATES) != NULL){
-    successfulRead = readVal(line, "%s", str);
-    if(successfulRead){
-      ret = getBoolean(str, &config.REMOVE_MULTIPLE_COLUMN_DUPLICATES);
-      if(ret != 0){
-        successfulRead = false;
-      }
-    }
-    *err = successfulRead ? NULL : strdup(REMOVE_MULTIPLE_COLUMN_DUPLICATES);
-  }
-
   if(strcasestr(line, LEXIS_FILE_PATH) != NULL){
     successfulRead = readVal(line, "%s", &config.LEXIS_FILE_PATH);
     *err = successfulRead ? NULL : strdup(LEXIS_FILE_PATH);
@@ -182,23 +168,10 @@ static void restoreDefaultConfig(const char* value){
   if(strcmp(value, SORT_DESCENDING) == 0){
     config.SORT_DESCENDING = DEFAULT_SORT_DESCENDING;
   }
-  if(strcmp(value, REMOVE_MULTIPLE_COLUMN_DUPLICATES) == 0){
-    config.REMOVE_MULTIPLE_COLUMN_DUPLICATES = DEFAULT_REMOVE_MULTIPLE_COLUMN_DUPLICATES;
-  }
   if(strcmp(value, LEXIS_FILE_PATH) == 0){
     strcpy(config.LEXIS_FILE_PATH, DEFAULT_LEXIS_FILE_PATH);
   }
 }
-
-//static void printConfig(){ //TODO just for testing, remove later
-//  fprintf(stdout, "MAX_WORD_LENGTH = %zu\n", config.MAX_WORD_LENGTH);
-//  fprintf(stdout, "MIN_WORD_LENGTH = %zu\n", config.MIN_WORD_LENGTH);
-//  fprintf(stdout, "MAX_WORDS_PER_ROW = %zu\n", config.MAX_WORDS_PER_ROW);
-//  fprintf(stdout, "WORD_COLUMNS_PER_ROW = %zu\n", config.WORD_COLUMNS_PER_ROW);
-//  fprintf(stdout, "SORT_DESCENDING = %s\n", config.SORT_DESCENDING?"True":"False");
-//  fprintf(stdout, "REMOVE_MULTIPLE_COLUMN_DUPLICATES = %s\n", config.REMOVE_MULTIPLE_COLUMN_DUPLICATES?"True":"False");
-//  fprintf(stdout, "LEXIS_FILE_NAME = %s\n", config.LEXIS_FILE_NAME);
-//}
 
 static void validateConfig(){
   if(config.MAX_WORD_LENGTH <= 0 || config.MAX_WORD_LENGTH > LONGEST_WORD_LENGTH){
