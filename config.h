@@ -11,6 +11,7 @@ typedef struct config{
   size_t MAX_WORDS_PER_ROW;
   size_t WORD_COLUMNS_PER_ROW;
   bool SORT_DESCENDING;
+  bool ENABLE_HIGHLIGHTING;
   char LEXIS_FILE_PATH[PATH_LENGTH];
 }Config;
 

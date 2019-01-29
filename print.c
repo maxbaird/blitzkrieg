@@ -39,7 +39,11 @@ static void printColumnHeaders(size_t start, size_t end){
 
   for(i = start; i < end; i++){
     sprintf(str, "[%zu]", i+1);
-    fprintf(stdout, BOLDCYAN"[%zu]%*s"RESET, i+1, (int)pad(strlen(str)),"");
+    if(config.ENABLE_HIGHLIGHTING){
+      fprintf(stdout, BOLDCYAN"[%zu]%*s"RESET, i+1, (int)pad(strlen(str)),"");
+    }else{
+      fprintf(stdout, "[%zu]%*s", i+1, (int)pad(strlen(str)),"");
+    }
     memset(str, 0, sizeof str);
   }
   fprintf(stdout, "\n");
@@ -102,7 +106,7 @@ static void printWord(char *str, bool endColumn){
      }
    }
 
-  if(highlightWord){
+  if(highlightWord && config.ENABLE_HIGHLIGHTING){
     fprintf(stdout, WHITE"%s%*s"RESET, str, endColumn ? 0: (int)pad(len),"");
   }else{
     fprintf(stdout, "%s%*s", str, endColumn ? 0: (int)pad(len),"");
