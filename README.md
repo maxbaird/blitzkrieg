@@ -23,6 +23,10 @@ Blitzkrieg should output 16 columns of text with each column headed by the rank
 of the letter as it appeared in the origial puzzle. Each column consists of the
 possible words that can be formed starting from that letter.
 
+If the letter grid is like the image below; the input would be "abcdefghijklmnop"
+
+<img src="./images/letter_grid.svg" alt="Letter Grid" width="200" height="200"/>
+
 ## Configuring
 At startup Blitzkrieg loads a configuration file (`config.conf`) which contains
 some options that can be modified. A description of the options along with
@@ -30,15 +34,17 @@ their default values are in the table below.
 
 Option                   |                       Description                           | Default
 -------------------------|-------------------------------------------------------------|---------
-MAX\_WORD\_LENGTH        |  Most letters a word should have                            | 9                        
-MIN\_WORD\_LENGTH        |  Least letters a word should have                           | 3
-MAX\_WORDS\_PER\_ROW     |  Number of words shown before repeating column header       | 15  
-WORD\_COLUMNS\_PER\_ROW  |  Number of columns of words to show per row                 | 16
-SORT\_DESCENDING         |  Sort words in descending order                             | True
-ENABLE\_HIGHLIGHTING     |  Highlight word columns and words with rare letters         | True
-LEXIS\_FILE\_PATH        |  Path to file with list of words                            | lexis
+`MAX\_WORD\_LENGTH`      |  Most letters a word should have                            | 9                        
+`MIN\_WORD\_LENGTH`      |  Least letters a word should have                           | 3
+`MAX\_WORDS\_PER\_ROW`   |  Number of words shown before repeating column header       | 15  
+`WORD\_COLUMNS\_PER\_ROW`|  Number of columns of words to show per row                 | 16
+`SORT\_DESCENDING`       |  Sort words in descending order                             | True
+`ENABLE\_HIGHLIGHTING`   |  Highlight word columns and words with rare letters         | True
+`LEXIS\_FILE\_PATH`      |  Path to file with list of words                            | lexis
 
 
-![alt text](images/letter_grid.svg "Letter Grid")
+The default options should be fine on most systems. If your display is small and/or does not
+support coloured text, adjust values of `MAX\_WORDS\_PER\_ROW`, `WORD\_COLUMNS\_PER\_ROW` and
+`ENABLE\_HIGHLIGHTING` respectively.
 
 Last Modified Sat 19 Jan 13:11:53 GMT 2019
