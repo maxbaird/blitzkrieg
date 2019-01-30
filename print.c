@@ -107,7 +107,7 @@ static void printWord(char *str, bool endColumn){
    }
 
   if(highlightWord && config.ENABLE_HIGHLIGHTING){
-    fprintf(stdout, WHITE"%s%*s"RESET, str, endColumn ? 0: (int)pad(len),"");
+    fprintf(stdout, BOLDRED"%s%*s"RESET, str, endColumn ? 0: (int)pad(len),"");
   }else{
     fprintf(stdout, "%s%*s", str, endColumn ? 0: (int)pad(len),"");
   }
