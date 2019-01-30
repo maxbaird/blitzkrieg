@@ -47,4 +47,4 @@ The default options should be fine on most systems. If your display is small and
 support coloured text, adjust values of `MAX_WORDS_PER_ROW`, `WORD_COLUMNS_PER_ROW` and
 `ENABLE_HIGHLIGHTING` respectively.
 
-Last Modified Sat 19 Jan 13:11:53 GMT 2019
+Last Modified Wed 30 Jan 23:38:04 GMT 2019
