@@ -25,7 +25,7 @@ possible words that can be formed starting from that letter.
 
 If the letter grid is like the image below; the input would be "abcdefghijklmnop"
 
-<img src="./images/letter_grid.svg" alt="Letter Grid" width="200" height="200"/>
+<img src="./images/letter_grid.svg" alt="Letter Grid" width="400" height="400"/>
 
 ## Configuring
 At startup Blitzkrieg loads a configuration file (`config.conf`) which contains
