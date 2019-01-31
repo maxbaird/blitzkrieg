@@ -2,19 +2,30 @@ PROJECT       = blitzkrieg.out
 CC            = gcc
 CFLAGS        = -c -O3 -Wall -Werror -Wextra
 LDFLAGS       = -lpthread
+SRC_DIR				= src
+OBJ_DIR       = obj
+OBJECTS       = main.o blitzkrieg.o tile.o board.o lexis.o avltree.o finder.o print.o config.o
+OBJS          = $(patsubst %, $(OBJ_DIR)/%, $(OBJECTS))
+MKDIR_P       = mkdir -p
+CLEAN_R       = rm -rf
 
-.PHONY : all clean
+.PHONY : all clean directories
 
-all : $(PROJECT)
+all : directories $(PROJECT)
 
 debug : CFLAGS += -g3
-debug : clean $(PROJECT)
+debug : clean directories $(PROJECT)
 
-$(PROJECT) : main.o blitzkrieg.o tile.o board.o lexis.o avltree.o finder.o print.o config.o
-	$(CC) -o $@ $^ $(LDFLAGS)
+$(PROJECT) : $(OBJS)
+	$(CC) $^ -o $@ $(LDFLAGS)
 
-%.o : %.c %.h
-	$(CC) $(CFLAGS) $<
+$(OBJ_DIR)/%.o : $(SRC_DIR)/%.c
+	$(CC) $(CFLAGS) $< -o $@
+
+directories : ${OBJ_DIR}
+
+${OBJ_DIR} :
+	${MKDIR_P} ${OBJ_DIR}
 
 clean :
-	rm -rf *.o *.out $(PROJECT)
+	$(CLEAN_R) $(PROJECT) $(OBJ_DIR)

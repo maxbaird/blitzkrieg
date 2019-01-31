@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#define PATH_LENGTH 64
+#define PATH_LENGTH 256
 
 typedef struct config{
   size_t MAX_WORD_LENGTH;

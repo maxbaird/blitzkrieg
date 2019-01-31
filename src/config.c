@@ -33,7 +33,7 @@ static const char* MIN_WORD_LENGTH        = "MIN_WORD_LENGTH";
 static const char* MAX_WORDS_PER_ROW      = "MAX_WORDS_PER_ROW";
 static const char* WORD_COLUMNS_PER_ROW   = "WORD_COLUMNS_PER_ROW";
 static const char* SORT_DESCENDING        = "SORT_DESCENDING";
-static const char* ENABLE_HIGHLIGHTING   = "ENABLE_HIGHLIGHTING";
+static const char* ENABLE_HIGHLIGHTING    = "ENABLE_HIGHLIGHTING";
 static const char* LEXIS_FILE_PATH        = "LEXIS_FILE_PATH";
 
 typedef struct configFound{
@@ -47,7 +47,6 @@ typedef struct configFound{
 }ConfigFound;
 
 static ConfigFound configFound = {false, false, false, false, false, false, false};
-static bool configurationLoaded = false;
 
 /*
  * Taken from: https://android.googlesource.com/platform/bionic/+/fe6338d/libc/string/strcasestr.c
@@ -324,14 +323,8 @@ void loadConfig(){
 
   checkAllConfigsFound();
   validateConfig();
-  configurationLoaded = true;
 }
 
 Config getConfig(){
-  if(!configurationLoaded){
-    fprintf(stderr, "Configuration not loaded!\n");
-    exit(EXIT_FAILURE);
-  }
-
   return config;
 }
