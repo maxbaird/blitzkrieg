@@ -94,7 +94,7 @@ static void strlenLongestWord(WordColumn *wc, size_t boardSize){
 }
 
 static void printWord(char *str, bool endColumn){
-  char highlights[] = {'x','q'};
+  char highlights[] = {'x','q','z'};
   bool highlightWord = false;
   size_t i = 0;
   size_t len = strlen(str);
