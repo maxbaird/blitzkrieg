@@ -93,23 +93,22 @@ static void strlenLongestWord(WordColumn *wc, size_t boardSize){
   LEN_LONGEST_WORD = len;
 }
 
-static void printWord(char *str, bool endColumn){
+static void printWord(Word *w, bool endColumn){
   char highlights[] = {'x','q','z'};
   bool highlightWord = false;
   size_t i = 0;
-  size_t len = strlen(str);
 
    for(i = 0; i < sizeof highlights; i++){
-     if(strchr(str, highlights[i]) != NULL){
+     if(strchr(w->word, highlights[i]) != NULL){
        highlightWord = true;
        break;
      }
    }
 
   if(highlightWord && config.ENABLE_HIGHLIGHTING){
-    fprintf(stdout, BOLDRED"%s%*s"RESET, str, endColumn ? 0: (int)pad(len),"");
+    fprintf(stdout, BOLDRED"%s%*s"RESET, w->word, endColumn ? 0: (int)pad(w->len),"");
   }else{
-    fprintf(stdout, "%s%*s", str, endColumn ? 0: (int)pad(len),"");
+    fprintf(stdout, "%s%*s", w->word, endColumn ? 0: (int)pad(w->len),"");
   }
 }
 
@@ -147,7 +146,7 @@ void printWords(Board *board, WordColumn *wc){
       //This loops prints a word under each column
       for(k = colHeaderStart; k < colHeaderEnd; k++){
         if(wc[k].wordCount > j){
-          printWord(wc[k].words[j].word, k==(colHeaderEnd-1));
+          printWord(&wc[k].words[j], k==(colHeaderEnd-1));
         }else{//If the current column has no more words, print nothing
           fprintf(stdout, "%*s", (int)pad(0),"");
         }
