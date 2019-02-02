@@ -1,8 +1,6 @@
 #ifndef __BLITZKRIEG_H__
 #define __BLITZKRIEG_H__
 
-#include "config.h"
-
 typedef struct word{
   size_t len;
   char *word;

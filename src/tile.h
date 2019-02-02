@@ -1,8 +1,6 @@
 #ifndef __TILE_H__
 #define __TILE_H__
 
-#include <stdbool.h>
-
 typedef struct coordinate{
   unsigned int x;
   unsigned int y;
