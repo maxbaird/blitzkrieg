@@ -18,6 +18,7 @@
 #define DEFAULT_WORD_COLUMNS_PER_ROW                    16
 #define DEFAULT_SORT_DESCENDING                         true
 #define DEFAULT_ENABLE_HIGHLIGHTING                     true
+#define DEFAULT_HIGHLIGHT_LETTERS                       "xqzj"
 #define DEFAULT_LEXIS_FILE_PATH                         "lexis"
 
 static Config config = {DEFAULT_MAX_WORD_LENGTH,
@@ -26,6 +27,7 @@ static Config config = {DEFAULT_MAX_WORD_LENGTH,
                         DEFAULT_WORD_COLUMNS_PER_ROW,
                         DEFAULT_SORT_DESCENDING,
                         DEFAULT_ENABLE_HIGHLIGHTING,
+                        DEFAULT_HIGHLIGHT_LETTERS,
                         DEFAULT_LEXIS_FILE_PATH};
 
 static const char* MAX_WORD_LENGTH        = "MAX_WORD_LENGTH";
@@ -34,6 +36,7 @@ static const char* MAX_WORDS_PER_ROW      = "MAX_WORDS_PER_ROW";
 static const char* WORD_COLUMNS_PER_ROW   = "WORD_COLUMNS_PER_ROW";
 static const char* SORT_DESCENDING        = "SORT_DESCENDING";
 static const char* ENABLE_HIGHLIGHTING    = "ENABLE_HIGHLIGHTING";
+static const char* HIGHLIGHT_LETTERS      = "HIGHLIGHT_LETTERS";
 static const char* LEXIS_FILE_PATH        = "LEXIS_FILE_PATH";
 
 typedef struct configFound{
@@ -43,10 +46,11 @@ typedef struct configFound{
   bool WORD_COLUMNS_PER_ROW;
   bool SORT_DESCENDING;
   bool ENABLE_HIGHLIGHTING;
+  bool HIGHLIGHT_LETTERS;
   bool LEXIS_FILE_PATH;
 }ConfigFound;
 
-static ConfigFound configFound = {false, false, false, false, false, false, false};
+static ConfigFound configFound = {false, false, false, false, false, false, false, false};
 
 /*
  * Taken from: https://android.googlesource.com/platform/bionic/+/fe6338d/libc/string/strcasestr.c
@@ -70,7 +74,7 @@ char *strcasestr(const char *s, const char *find)
   return ((char *)s);
 }
 
-static void sanitizeLine(char *str){
+static void removeSpaces(char *str){
   char* i = str;
   char* j = str;
 
@@ -176,6 +180,12 @@ static bool populateConfig(char *line, char **err){
     *err = successfulRead ? NULL : strdup(ENABLE_HIGHLIGHTING);
   }
 
+  if(strcasestr(line, HIGHLIGHT_LETTERS) != NULL){
+    configFound.HIGHLIGHT_LETTERS = true;
+    successfulRead = readVal(line, "%s", &config.HIGHLIGHT_LETTERS);
+    *err = successfulRead ? NULL : strdup(HIGHLIGHT_LETTERS);
+  }
+
   if(strcasestr(line, LEXIS_FILE_PATH) != NULL){
     configFound.LEXIS_FILE_PATH = true;
     successfulRead = readVal(line, "%s", &config.LEXIS_FILE_PATH);
@@ -208,6 +218,10 @@ static void restoreDefaultConfig(const char* value){
 
   if(strcmp(value, ENABLE_HIGHLIGHTING) == 0){
     config.SORT_DESCENDING = DEFAULT_ENABLE_HIGHLIGHTING;
+  }
+
+  if(strcmp(value, HIGHLIGHT_LETTERS) == 0){
+    strcpy(config.LEXIS_FILE_PATH, DEFAULT_HIGHLIGHT_LETTERS);
   }
 
   if(strcmp(value, LEXIS_FILE_PATH) == 0){
@@ -305,7 +319,7 @@ void loadConfig(){
   }
 
   while(fgets(line, LINE_BUFFER, fp) != NULL){
-    sanitizeLine(line);
+    removeSpaces(line);
 
     if(line[0] == '#' || line[0] == '\n'){ //Ignore commented and empty lines
       continue;

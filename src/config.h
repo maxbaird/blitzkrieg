@@ -4,6 +4,7 @@
 #include <stdbool.h>
 
 #define PATH_LENGTH 256
+#define HIGHLIGHT_LETTER_COUNT 64
 
 typedef struct config{
   size_t MAX_WORD_LENGTH;
@@ -12,6 +13,7 @@ typedef struct config{
   size_t WORD_COLUMNS_PER_ROW;
   bool SORT_DESCENDING;
   bool ENABLE_HIGHLIGHTING;
+  char HIGHLIGHT_LETTERS[HIGHLIGHT_LETTER_COUNT];
   char LEXIS_FILE_PATH[PATH_LENGTH];
 }Config;
 
