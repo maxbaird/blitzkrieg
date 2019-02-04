@@ -2,11 +2,13 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "config.h"
 
 #define FILENAME "config.conf"
-#define LINE_BUFFER 128
+#define LINE_BUFFER                                     128
+#define FORMAT_BUFFER                                   8
 
 #define LONGEST_WORD_LENGTH                             16
 #define MAX_WORD_COLUMNS_PER_ROW                        16
@@ -18,7 +20,7 @@
 #define DEFAULT_WORD_COLUMNS_PER_ROW                    16
 #define DEFAULT_SORT_DESCENDING                         true
 #define DEFAULT_ENABLE_HIGHLIGHTING                     true
-#define DEFAULT_HIGHLIGHT_LETTERS                       "xqzj"
+#define DEFAULT_HIGHLIGHT_LETTERS                       "ab"//"xqzj"
 #define DEFAULT_LEXIS_FILE_PATH                         "lexis"
 
 static Config config = {DEFAULT_MAX_WORD_LENGTH,
@@ -127,13 +129,13 @@ static int getBoolean(char *str, bool *b){
   return -1;
 }
 
-//static void buildFormatStr(char *fmt, size_t fmtLen, size_t width){
-//  snprintf(fmt, fmtLen, "%c%zu%c");
-//}
+static void buildFormatStr(char *fmt, char *fmt_str, size_t fmt_len, size_t width){
+  snprintf(fmt, fmt_len, "%c%zu%s", '%', width, fmt_str);
+}
 
 static bool populateConfig(char *line, char **err){
   char str[64] = {'\0'};
-  //char format[8] = {'\0'};
+  char format[FORMAT_BUFFER] = {'\0'};
   int ret = 0;
   bool successfulRead = true;
 
@@ -187,13 +189,17 @@ static bool populateConfig(char *line, char **err){
 
   if(strcasestr(line, HIGHLIGHT_LETTERS) != NULL){
     configFound.HIGHLIGHT_LETTERS = true;
-    successfulRead = readVal(line, "%s", &config.HIGHLIGHT_LETTERS);
+    buildFormatStr(format, "s", sizeof format, HIGHLIGHT_LETTER_COUNT);
+
+    successfulRead = readVal(line, format, &config.HIGHLIGHT_LETTERS);
     *err = successfulRead ? NULL : strdup(HIGHLIGHT_LETTERS);
   }
 
   if(strcasestr(line, LEXIS_FILE_PATH) != NULL){
     configFound.LEXIS_FILE_PATH = true;
-    successfulRead = readVal(line, "%s", &config.LEXIS_FILE_PATH);
+    buildFormatStr(format, "s", sizeof format, PATH_LENGTH);
+
+    successfulRead = readVal(line, format, &config.LEXIS_FILE_PATH);
     *err = successfulRead ? NULL : strdup(LEXIS_FILE_PATH);
   }
 
@@ -277,6 +283,13 @@ static void validateConfig(){
         DEFAULT_WORD_COLUMNS_PER_ROW);
 
     config.WORD_COLUMNS_PER_ROW = DEFAULT_WORD_COLUMNS_PER_ROW;
+  }
+
+  if(access(config.LEXIS_FILE_PATH, R_OK) == -1){
+    fprintf(stderr, "Lexis file \"%s\" not found. Defaulting to \"%s\"\n",
+        config.LEXIS_FILE_PATH,
+        DEFAULT_LEXIS_FILE_PATH);
+    strncpy(config.LEXIS_FILE_PATH, DEFAULT_LEXIS_FILE_PATH, PATH_LENGTH);
   }
   fprintf(stdout, "\n");
 }

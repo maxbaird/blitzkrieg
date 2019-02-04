@@ -4,7 +4,7 @@
 #include <stdbool.h>
 
 #define PATH_LENGTH 256
-#define HIGHLIGHT_LETTER_COUNT 64
+#define HIGHLIGHT_LETTER_COUNT 32
 
 typedef struct config{
   size_t MAX_WORD_LENGTH;
