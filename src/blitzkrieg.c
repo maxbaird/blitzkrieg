@@ -123,6 +123,8 @@ static void displayWelcome(){
     fprintf(stdout, "%s", msg);
   }
 
+  fprintf(stdout, "\n(ctrl + D to exit.)\n");
+
   fclose(fp);
 }
 
