@@ -127,8 +127,13 @@ static int getBoolean(char *str, bool *b){
   return -1;
 }
 
+//static void buildFormatStr(char *fmt, size_t fmtLen, size_t width){
+//  snprintf(fmt, fmtLen, "%c%zu%c");
+//}
+
 static bool populateConfig(char *line, char **err){
   char str[64] = {'\0'};
+  //char format[8] = {'\0'};
   int ret = 0;
   bool successfulRead = true;
 
