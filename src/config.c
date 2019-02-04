@@ -141,31 +141,36 @@ static bool populateConfig(char *line, char **err){
 
   if(strcasestr(line, MAX_WORD_LENGTH) != NULL){
     configFound.MAX_WORD_LENGTH = true;
-    successfulRead = readVal(line, "%zu", &config.MAX_WORD_LENGTH);
+    buildFormatStr(format, "zu", sizeof format, 2);
+    successfulRead = readVal(line, format, &config.MAX_WORD_LENGTH);
     *err = successfulRead ? NULL : strdup(MAX_WORD_LENGTH);
   }
 
   if(strcasestr(line, MIN_WORD_LENGTH) != NULL){
     configFound.MIN_WORD_LENGTH = true;
-    successfulRead = readVal(line, "%zu", &config.MIN_WORD_LENGTH);
+    buildFormatStr(format, "zu", sizeof format, 2);
+    successfulRead = readVal(line, format, &config.MIN_WORD_LENGTH);
     *err = successfulRead ? NULL : strdup(MIN_WORD_LENGTH);
   }
 
   if(strcasestr(line, MAX_WORDS_PER_ROW) != NULL){
     configFound.MAX_WORDS_PER_ROW = true;
-    successfulRead = readVal(line, "%zu", &config.MAX_WORDS_PER_ROW);
+    buildFormatStr(format, "zu", sizeof format, 2);
+    successfulRead = readVal(line, format, &config.MAX_WORDS_PER_ROW);
     *err = successfulRead ? NULL : strdup(MAX_WORDS_PER_ROW);
   }
 
   if(strcasestr(line, WORD_COLUMNS_PER_ROW) != NULL){
     configFound.WORD_COLUMNS_PER_ROW = true;
-    successfulRead = readVal(line, "%zu", &config.WORD_COLUMNS_PER_ROW);
+    buildFormatStr(format, "zu", sizeof format, 2);
+    successfulRead = readVal(line, format, &config.WORD_COLUMNS_PER_ROW);
     *err = successfulRead ? NULL : strdup(WORD_COLUMNS_PER_ROW);
   }
 
   if(strcasestr(line, SORT_DESCENDING) != NULL){
     configFound.SORT_DESCENDING = true;
-    successfulRead = readVal(line, "%s", str);
+    buildFormatStr(format, "s", sizeof format, 5);
+    successfulRead = readVal(line, format, str);
     if(successfulRead){
       ret = getBoolean(str, &config.SORT_DESCENDING);
       if(ret != 0){
@@ -177,7 +182,8 @@ static bool populateConfig(char *line, char **err){
 
   if(strcasestr(line, ENABLE_HIGHLIGHTING) != NULL){
     configFound.ENABLE_HIGHLIGHTING = true;
-    successfulRead = readVal(line, "%s", str);
+    buildFormatStr(format, "s", sizeof format, 5);
+    successfulRead = readVal(line, format, str);
     if(successfulRead){
       ret = getBoolean(str, &config.ENABLE_HIGHLIGHTING);
       if(ret != 0){
