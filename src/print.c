@@ -94,12 +94,12 @@ static void strlenLongestWord(WordColumn *wc, size_t boardSize){
 }
 
 static void printWord(Word *w, bool endColumn){
-  char highlights[] = {'x','q','z','j'}; //TODO Make this a configuration setting?
   bool highlightWord = false;
   size_t i = 0;
+  size_t len = strlen(config.HIGHLIGHT_LETTERS);
 
-   for(i = 0; i < sizeof highlights; i++){
-     if(strchr(w->word, highlights[i]) != NULL){
+   for(i = 0; i < len; i++){
+     if(strchr(w->word, config.HIGHLIGHT_LETTERS[i]) != NULL){
        highlightWord = true;
        break;
      }
