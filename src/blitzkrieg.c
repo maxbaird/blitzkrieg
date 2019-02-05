@@ -10,13 +10,11 @@
 #include "finder.h"
 #include "print.h"
 #include "config.h"
+#include "welcome.h"
 
 #define HEIGHT 4
 #define WIDTH 4
 #define MAX_LETTERS HEIGHT * WIDTH
-
-#define WELCOME_FILE_NAME "welcome"
-#define WELCOME_BUFFER_SIZE 2048
 
 #define PROMPT ">> "
 
@@ -109,30 +107,12 @@ static void freeWordColumns(Board *board){
   free(WORD_COLUMNS);
 }
 
-static void displayWelcome(){
-  FILE *fp = fopen(WELCOME_FILE_NAME, "r");
-  char msg[WELCOME_BUFFER_SIZE] = {'\0'};
-
-  if(fp == NULL){
-    fprintf(stderr, "Error opening welcome message file!\n");
-    return;
-  }
-
-  fprintf(stdout, "\n");
-  while(fgets(msg, WELCOME_BUFFER_SIZE, fp) != NULL){
-    fprintf(stdout, "%s", msg);
-  }
-
-  fprintf(stdout, "\n(ctrl + D to exit.)\n");
-
-  fclose(fp);
-}
-
 static void start(Board *board){
   char letters[MAX_LETTERS+1] = {'\0'};
   char *res = NULL;
 
-  displayWelcome();
+  printWelcome();
+  fprintf(stdout, "ctrl + D to exit.\n");
 
   for(;;){
     fprintf(stdout, "\n%s", PROMPT);

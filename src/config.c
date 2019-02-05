@@ -331,11 +331,12 @@ static void checkAllConfigsFound(){
 }
 
 void loadConfig(){
-  FILE *fp = fopen(FILENAME, "r");
+  FILE *fp = NULL;
   char line[LINE_BUFFER] = {'\0'};
   bool success = true;
   char *readErr = NULL;
 
+  fp = fopen(FILENAME, "r");
   if(fp == NULL){
     fprintf(stderr, "Failed to read config file \"%s\"\n", FILENAME);
     fprintf(stderr, "Using default configuration\n");
