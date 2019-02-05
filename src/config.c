@@ -144,6 +144,7 @@ static bool populateConfig(char *line, char **err){
     buildFormatStr(format, "zu", sizeof format, 2);
     successfulRead = readVal(line, format, &config.MAX_WORD_LENGTH);
     *err = successfulRead ? NULL : strdup(MAX_WORD_LENGTH);
+    fprintf(stdout, "Max len: %zu\n", config.MAX_WORD_LENGTH);
   }
 
   if(strcasestr(line, MIN_WORD_LENGTH) != NULL){
@@ -184,6 +185,7 @@ static bool populateConfig(char *line, char **err){
     configFound.ENABLE_HIGHLIGHTING = true;
     buildFormatStr(format, "s", sizeof format, 5);
     successfulRead = readVal(line, format, str);
+    fprintf(stdout, "value read: %s\n", str);
     if(successfulRead){
       ret = getBoolean(str, &config.ENABLE_HIGHLIGHTING);
       if(ret != 0){
