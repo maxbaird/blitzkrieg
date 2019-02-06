@@ -40,6 +40,7 @@ Option                |                       Description                       
 `WORD_COLUMNS_PER_ROW`|  Number of columns of words to show per row                 | 16
 `SORT_DESCENDING`     |  Sort words in descending order                             | True
 `ENABLE_HIGHLIGHTING` |  Highlight word columns and words with rare letters         | True
+`HIGHLIGHT_LETTERS`   |  String letters. Words with these letters are highlighted.  | xqzjy
 `LEXIS_FILE_PATH`     |  Path to file with list of words                            | lexis
 
 
@@ -47,4 +48,4 @@ The default options should be fine on most systems. If your display is small and
 support coloured text, adjust values of `MAX_WORDS_PER_ROW`, `WORD_COLUMNS_PER_ROW` and
 `ENABLE_HIGHLIGHTING` respectively.
 
-Last Modified Wed 30 Jan 23:38:04 GMT 2019
+Last Modified Wed  6 Feb 19:07:57 GMT 2019
