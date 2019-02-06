@@ -40,7 +40,7 @@ Option                |                       Description                       
 `WORD_COLUMNS_PER_ROW`|  Number of columns of words to show per row                 | 16
 `SORT_DESCENDING`     |  Sort words in descending order                             | True
 `ENABLE_HIGHLIGHTING` |  Highlight word columns and words with rare letters         | True
-`HIGHLIGHT_LETTERS`   |  String letters. Words with these letters are highlighted.  | xqzjy
+`HIGHLIGHT_LETTERS`   |  Words containing these letters are highlighted.            | xqzjy
 `LEXIS_FILE_PATH`     |  Path to file with list of words                            | lexis
 
 
