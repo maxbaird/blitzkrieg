@@ -38,16 +38,6 @@ static bool inputValid(char *input){
   size_t len = 0;
   char *p = NULL;
 
-  if(strncmp(input, TEST_COMMAND, strlen(TEST_COMMAND)) == 0){
-    strncpy(input, TEST_LETTERS, MAX_LETTERS+1);
-    /* Input will usually have newline
-     * push newline back to stdin
-     * to avoid needing a special case to handle
-     * this "input" without a newline.
-     */
-    ungetc('\n', stdin);
-  }
-
   //Replace newline with terminator
   if((p=strchr(input, '\n')) != NULL){
     *p = '\0';
@@ -121,6 +111,20 @@ static void freeWordColumns(Board *board){
   free(WORD_COLUMNS);
 }
 
+static void processCommands(char *input){
+  //Only currently supported command is "test"
+  //This command uses the first 16 letters of the alphabet as the input
+  if(strncmp(input, TEST_COMMAND, strlen(TEST_COMMAND)) == 0){
+    strncpy(input, TEST_LETTERS, MAX_LETTERS+1);
+    /* Input will usually have newline
+     * push newline back to stdin
+     * to avoid needing a special case to handle
+     * this "input" without a newline.
+     */
+    ungetc('\n', stdin);
+  }
+}
+
 static void start(Board *board){
   char letters[MAX_LETTERS+1] = {'\0'};
   char *res = NULL;
@@ -136,6 +140,9 @@ static void start(Board *board){
     res = fgets(letters, MAX_LETTERS+1, stdin);
 
     if(res == NULL){break;}
+
+    processCommands(letters);
+
     if(!inputValid(letters)){continue;}
 
     placeLetters(board, letters);
