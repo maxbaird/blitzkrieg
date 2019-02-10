@@ -27,12 +27,12 @@ static bool uninitialized(Trie t){
 }
 
 static bool checkInit(Trie t, const char *func){
-	if(uninitialized(t)){
-		fprintf(stderr, "[%s Error]: Trie not initialized!\n", func);
-		return false;
-	}
+  if(uninitialized(t)){
+    fprintf(stderr, "[%s Error]: Trie not initialized!\n", func);
+    return false;
+  }
 
-	return true;
+  return true;
 }
 
 static Trie makeTrie(){
@@ -70,7 +70,7 @@ Trie TrieMakeEmpty(Trie t){
 
 Trie TrieFree(Trie t){
   freeTrie(t);
-	return NULL;
+  return NULL;
 }
 
 void TrieInsert(Trie t, const char *key){
