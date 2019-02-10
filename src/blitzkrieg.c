@@ -125,12 +125,15 @@ static void start(Board *board){
 
     placeLetters(board, letters);
 
-    clock_t t;
-    t = clock();
+    struct timespec start, finish;
+    double elapsed;
+    clock_gettime(CLOCK_MONOTONIC, &start);
     findWords();
-    t = clock() - t;
-    double time_taken = ((double)t)/CLOCKS_PER_SEC;
-    fprintf(stdout, "findWords() took %f seconds\n", time_taken);
+    clock_gettime(CLOCK_MONOTONIC, &finish);
+    elapsed = (finish.tv_sec - start.tv_sec);
+    elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+
+    fprintf(stdout, "findWords() took %f seconds\n", elapsed);
 
     printWords(board, WORD_COLUMNS);
     reset(board);
