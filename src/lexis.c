@@ -2,20 +2,24 @@
 #include <stdlib.h>
 #include <string.h>
 #include "lexis.h"
-#include "avltree.h"
+#include "trie.h"
 #include "config.h"
 
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 512
+#define FORMAT_SIZE 8
 
-static AvlTree lexisTree;
+static Trie lexisTrie;
 
 void loadLexis(){
   Config config = getConfig();
-  lexisTree = MakeEmpty(NULL);
+  lexisTrie = TrieMakeEmpty(NULL);
+
   FILE *fp = NULL;
-  char word[BUFFER_SIZE];
+  char word[BUFFER_SIZE+1] = {'\0'};
   char *tmp = NULL;
   size_t len = 0;
+  char fmt[FORMAT_SIZE] = {'\0'};
+  int c = 0;
 
   fp = fopen(config.LEXIS_FILE_PATH, "r");
 
@@ -24,28 +28,35 @@ void loadLexis(){
     exit(EXIT_FAILURE);
   }
 
-  while(fscanf(fp, "%s", word) == 1){
+  tmp = calloc((config.MAX_WORD_LENGTH+1), sizeof(char));
+
+  if(tmp == NULL){
+    fprintf(stderr, "Failed to allocate memory when loading lexis\n");
+    exit(EXIT_FAILURE);
+  }
+
+  snprintf(fmt, FORMAT_SIZE, "%c%zus", '%', (size_t)BUFFER_SIZE);
+
+  while(fscanf(fp, fmt, word) == 1){
     len = strlen(word);
 
     if(len <= config.MAX_WORD_LENGTH){
-      tmp = malloc((config.MAX_WORD_LENGTH+1) * sizeof(char));
-
-      if(tmp == NULL){
-        fprintf(stderr, "Failed to allocate memory when loading lexis\n");
-        exit(EXIT_FAILURE);
-      }
-
       strncpy(tmp, word, config.MAX_WORD_LENGTH);
-      lexisTree = Insert((void *)tmp, lexisTree);
+      TrieInsert(lexisTrie, tmp);
     }
+
+    /*Consume extra characters that could not fit in word buffer */
+    while((c = fgetc(fp)) != EOF && c != '\n');
   }
+
   fclose(fp);
+  free(tmp);
 }
 
 bool isWord(char *letters){
-  return !(Find((void *)letters, lexisTree) == NULL);
+  return TrieSearch(lexisTrie, letters);
 }
 
 void unloadLexis(){
-  MakeEmpty(lexisTree);
+  lexisTrie = TrieMakeEmpty(lexisTrie);
 }

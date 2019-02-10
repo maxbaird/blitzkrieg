@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
+#include <time.h>
 #include "blitzkrieg.h"
 #include "tile.h"
 #include "board.h"
@@ -123,7 +124,14 @@ static void start(Board *board){
     if(!inputValid(letters)){continue;}
 
     placeLetters(board, letters);
+
+    clock_t t;
+    t = clock();
     findWords();
+    t = clock() - t;
+    double time_taken = ((double)t)/CLOCKS_PER_SEC;
+    fprintf(stdout, "findWords() took %f seconds\n", time_taken);
+
     printWords(board, WORD_COLUMNS);
     reset(board);
     consumeNewline();
