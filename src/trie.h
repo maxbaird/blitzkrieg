@@ -8,7 +8,7 @@ typedef struct TrieNode* Trie;
 
 Trie TrieMakeEmpty(Trie t);
 void TrieInsert(Trie t, const char *key);
-bool TrieSearch(Trie t, const char *key);
+bool TrieSearch(Trie t, const char *key, size_t length);
 Trie TrieFree(Trie t);
 
 #endif /* __TRIE_H__ */

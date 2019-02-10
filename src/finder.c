@@ -76,7 +76,7 @@ static void traverse(Tile *t, char *letters, Path *path, size_t depth){
     str[0]=t->letter; //Handle initial traversal call
   }
 
-  if(isWord(str)){
+  if(isWord(str, depth+1)){
     addWord(str, tilePath->root);
   }
 

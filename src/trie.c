@@ -98,16 +98,14 @@ void TrieInsert(Trie t, const char *key){
   trie->isEndOfWord = true;
 }
 
-bool TrieSearch(Trie t, const char *key){
+bool TrieSearch(Trie t, const char *key, size_t length){
   if(!checkInit(t, __func__)){
     return false;
   }
 
   size_t level = 0;
-  size_t length = 0;
   size_t index = 0;
 
-  length = strlen(key);
   Trie trie = t;
 
   for(level = 0; level < length; level++){

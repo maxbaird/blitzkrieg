@@ -53,10 +53,10 @@ void loadLexis(){
   free(tmp);
 }
 
-bool isWord(char *letters){
-  return TrieSearch(lexisTrie, letters);
+bool isWord(char *letters, size_t length){
+  return TrieSearch(lexisTrie, letters, length);
 }
 
 void unloadLexis(){
-  lexisTrie = TrieMakeEmpty(lexisTrie);
+  lexisTrie = TrieFree(lexisTrie);
 }
