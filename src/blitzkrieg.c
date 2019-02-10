@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <stdbool.h>
 #include <time.h>
+#include "debug.h"
 #include "blitzkrieg.h"
 #include "tile.h"
 #include "board.h"
@@ -18,6 +19,8 @@
 #define MAX_LETTERS HEIGHT * WIDTH
 
 #define PROMPT ">> "
+#define TEST_COMMAND "test"
+#define TEST_LETTERS "abcdefghijklmnop"
 
 #define DEFAULT_BUFFER_SIZE 32
 
@@ -34,6 +37,16 @@ static bool inputValid(char *input){
   size_t i = 0;
   size_t len = 0;
   char *p = NULL;
+
+  if(strncmp(input, TEST_COMMAND, strlen(TEST_COMMAND)) == 0){
+    strncpy(input, TEST_LETTERS, MAX_LETTERS+1);
+    /* Input will usually have newline
+     * push newline back to stdin
+     * to avoid needing a special case to handle
+     * this "input" without a newline.
+     */
+    ungetc('\n', stdin);
+  }
 
   //Replace newline with terminator
   if((p=strchr(input, '\n')) != NULL){
@@ -111,6 +124,8 @@ static void freeWordColumns(Board *board){
 static void start(Board *board){
   char letters[MAX_LETTERS+1] = {'\0'};
   char *res = NULL;
+  struct timespec start, finish;
+  double elapsed;
 
   printWelcome();
   fprintf(stdout, "ctrl + D to exit.\n");
@@ -125,15 +140,18 @@ static void start(Board *board){
 
     placeLetters(board, letters);
 
-    struct timespec start, finish;
-    double elapsed;
-    clock_gettime(CLOCK_MONOTONIC, &start);
-    findWords();
-    clock_gettime(CLOCK_MONOTONIC, &finish);
-    elapsed = (finish.tv_sec - start.tv_sec);
-    elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+    if(DEBUG){
+      clock_gettime(CLOCK_MONOTONIC, &start);
+    }
 
-    fprintf(stdout, "findWords() took %f seconds\n", elapsed);
+    findWords();
+
+    if(DEBUG){
+      clock_gettime(CLOCK_MONOTONIC, &finish);
+      elapsed = (finish.tv_sec - start.tv_sec);
+      elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+      fprintf(stdout, "findWords() took %f seconds\n", elapsed);
+    }
 
     printWords(board, WORD_COLUMNS);
     reset(board);
