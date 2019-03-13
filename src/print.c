@@ -24,14 +24,15 @@
 #define BOLDCYAN    "\033[1m\033[36m"      /* Bold Cyan */
 #define BOLDWHITE   "\033[1m\033[37m"      /* Bold White */
 
-#define SPACE_BETWEEN_COLUMNS 2 //Space between word columns
+#define SPACE_BETWEEN_COLUMNS     2 //Space between word columns
+#define DEFAULT_LONGEST_WORD_LEN  4 //Used to generate spaces for columns with no words
 
 static Config config;
 static size_t LEN_LONGEST_WORD;
 
 static size_t pad(WordColumn *wc, size_t len){
   if(wc->wordCount == 0){
-    wc->longestWordLen = 4;
+    wc->longestWordLen = DEFAULT_LONGEST_WORD_LEN;
   }
   return (wc->longestWordLen - len) + SPACE_BETWEEN_COLUMNS;
 }
@@ -115,6 +116,27 @@ static void printWord(WordColumn *wc, Word *w, bool endColumn){
   }
 }
 
+static int calculateNumberOfSeparators(WordColumn *wc, size_t boardSize){
+  size_t sum = 0;
+  size_t widest = 0;
+  size_t n = 1;
+  size_t i = 0;
+
+  for(i = 0; i < boardSize; i++){
+    sum = sum + wc[i].longestWordLen;
+
+    if(n == config.WORD_COLUMNS_PER_ROW){
+      if(widest < sum){
+        widest = sum;
+      }
+      sum = 0;
+      n = 0;
+    }
+    n++;
+  }
+  return widest + (config.WORD_COLUMNS_PER_ROW * SPACE_BETWEEN_COLUMNS);
+}
+
 void printWords(Board *board, WordColumn *wc){
   config = getConfig();
   size_t i = 0;
@@ -163,7 +185,9 @@ void printWords(Board *board, WordColumn *wc){
     colHeaderEnd = colHeaderEnd >= boardSize ? boardSize : colHeaderEnd; //Keep the end to the size of the board
   }
 
-  for(i = 0; i < (LEN_LONGEST_WORD + SPACE_BETWEEN_COLUMNS) * config.WORD_COLUMNS_PER_ROW; i++){
+  size_t numSeparator = calculateNumberOfSeparators(wc, boardSize);
+
+  for(i = 0; i < numSeparator; i++){
     fprintf(stdout, "+");
   }
 
