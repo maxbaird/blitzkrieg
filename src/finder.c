@@ -58,6 +58,7 @@ static void traverse(Tile *t, char *letters, Path *path, size_t depth){
     exit(EXIT_FAILURE);
   }
 
+  //The traverse path is set to -1 because 0 is a valid tile index
   memset(tilePath->traversePath, -1, sizeof(int) * BOARD_SIZE);
 
   if(path == NULL){ // path will be NULL for initial call
