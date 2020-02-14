@@ -13,6 +13,7 @@ CLEAN_R       = rm -rf
 
 all : directories $(PROJECT)
 
+debug : CFLAGS = -c
 debug : CFLAGS += -g3
 debug : CFLAGS += -DDEBUG
 debug : clean directories $(PROJECT)

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "lexis.h"
 #include "trie.h"
 #include "config.h"
@@ -9,6 +10,26 @@
 #define FORMAT_SIZE 8
 
 static Trie lexisTrie;
+
+static void sanitize(char *str){
+  char *src = str;
+  char *dst = str;
+
+  while(*src){
+    if(!isalpha((unsigned char)*src)){
+      src++;
+    }else if(isupper((unsigned char)*src)){
+      *dst++ = tolower((unsigned char)*src);
+      src++;
+    }else if(src == dst){
+      src++;
+      dst++;
+    }else{
+      *dst++ = *src++; 
+    }
+  }
+  *dst = 0;
+}
 
 void loadLexis(){
   Config config = getConfig();
@@ -42,6 +63,9 @@ void loadLexis(){
 
     if(len <= config.MAX_WORD_LENGTH){
       strncpy(tmp, word, config.MAX_WORD_LENGTH);
+      
+      //Ensure only lower case letters are inserted
+      sanitize(tmp);
       TrieInsert(lexisTrie, tmp);
     }
 
